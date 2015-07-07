@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/movie_list"    >
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/image"
+        android:adjustViewBounds="true" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/name"
+        android:textIsSelectable="true"
+        android:inputType="none"
+        android:minLines="3"
+        android:maxLines="3"
+        android:background="#88455A64"
+        android:textColor="@color/primary_text"
+        android:gravity="center_horizontal|center_vertical"
+        android:layout_gravity="center_horizontal|bottom"/>
+</FrameLayout>

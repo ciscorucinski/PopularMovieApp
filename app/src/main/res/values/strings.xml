@@ -1,0 +1,19 @@
+<resources>
+
+    <string name="app_name">Movies</string>
+
+    <string name="movies_popular">Most Popular</string>
+    <string name="movies_rating">Highest Rated</string>
+    <string name="swap_mode">Swap Mode</string>
+
+    <string name="action_settings">Settings</string>
+
+    <string name="movie_search">Search For Movie</string>
+    <string name="search_selection_top_menu">Search Mode</string>
+    <string name="search_character">Character</string>
+    <string name="search_word">Word</string>
+    <string name="search_buffer">After 3 Characters</string>
+    <string name="search_movie_title">Phrase</string>
+    <string name="language_selection_top_menu">Language</string>
+
+</resources>
