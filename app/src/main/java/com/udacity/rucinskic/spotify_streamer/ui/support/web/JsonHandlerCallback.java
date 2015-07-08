@@ -13,12 +13,12 @@ import org.json.JSONObject;
 
 public class JsonHandlerCallback implements Handler.Callback {
 
-    private API storage;
+    private final API storage;
 
-    public JsonHandlerCallback(API storage) { this.storage = storage; }
+    public JsonHandlerCallback(final API storage) { this.storage = storage; }
 
     @Override
-    public boolean handleMessage(Message msg) {
+    public boolean handleMessage(final Message msg) {
 
         // These are the names of the JSON objects that need to be extracted.
         final String RESULTS = "results";
@@ -32,6 +32,8 @@ public class JsonHandlerCallback implements Handler.Callback {
 
             JSONObject movieListJson = (JSONObject) msg.obj;
             JSONArray movieArray = movieListJson.getJSONArray(RESULTS);
+
+            Movie movie;
 
             for (int i = 0; i < movieArray.length(); i++) {
 
@@ -68,7 +70,7 @@ public class JsonHandlerCallback implements Handler.Callback {
                         .appendEncodedPath(filePath)
                         .build();
 
-                Movie movie = new Movie(title, uri);
+                movie = new Movie(title, uri);
 
                 movie.setOverview(overview);
                 movie.setRating(voteAverage);

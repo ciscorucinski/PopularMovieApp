@@ -18,9 +18,9 @@ public class WebService {
 
     private final Uri uri;
 
-    public WebService(Uri uri) { this.uri = uri; }
+    public WebService(final Uri uri) { this.uri = uri; }
 
-    public void acquireDataWithCallback(Handler.Callback callback) throws JSONException {
+    public void acquireDataWithCallback(final Handler.Callback callback) throws JSONException {
 
         // These two need to be declared outside the try/catch
         // so that they can be closed in the finally block.
@@ -48,7 +48,7 @@ public class WebService {
             String line;
             while ((line = reader.readLine()) != null) {
 
-                buffer.append(line).append("\n");
+                buffer.append(line).append('\n');
 
             }
 

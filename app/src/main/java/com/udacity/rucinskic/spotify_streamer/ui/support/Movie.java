@@ -12,7 +12,7 @@ public class Movie {
     private double rating;
     private String overview;
 
-    public Movie(String name, Uri imageUri) {
+    public Movie(final String name, final Uri imageUri) {
 
         this.name = name;
         this.imageUri = imageUri;
@@ -26,27 +26,27 @@ public class Movie {
 
     }
 
-    public String getName() { return this.name; }
+    public CharSequence getName() { return this.name; }
     public Uri getImageUri() { return this.imageUri; }
     public Uri getImageUriLarge() { return this.imageUriLarge; }
     public Uri getImageUriSmall() { return this.imageUriSmall; }
-    public String getDateRelease() { return this.release; }
+    public CharSequence getDateRelease() { return this.release; }
     public float getRating() { return (float)this.rating; }
-    public String getOverview() { return this.overview; }
+    public CharSequence getOverview() { return this.overview; }
 
-    public void setName(String name) { this.name = name; }
-    public void setImageUri(Uri imageUri) { this.imageUri = imageUri; }
-    public void setImageUriLarge(Uri imageUri) { this.imageUriLarge = imageUri; }
-    public void setImageUriSmall(Uri imageUri) { this.imageUriSmall = imageUri; }
-    public void setRating(double rating) { this.rating = rating; }
-    public void setOverview(String overview) {
+    public void setName(final String name) { this.name = name; }
+    public void setImageUri(final Uri imageUri) { this.imageUri = imageUri; }
+    public void setImageUriLarge(final Uri imageUri) { this.imageUriLarge = imageUri; }
+    public void setImageUriSmall(final Uri imageUri) { this.imageUriSmall = imageUri; }
+    public void setRating(final double rating) { this.rating = rating; }
+    public void setOverview(final String overview) {
 
-        if (overview == "null") return;
+        if (overview.equals("null")) return;
 
         this.overview = overview;
 
     }
-    public void setDateRelease(String date) {
+    public void setDateRelease(final String date) {
 
         if (date.equals("null")) { return; }
 

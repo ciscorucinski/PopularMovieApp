@@ -6,7 +6,6 @@ import java.util.List;
 
 public interface NetworkCacheable<T> { // TODO not the best name. Rename for part 2
 
-    boolean setWholeCache(List<T> entities);
     boolean add(T entity);
     void clearCache();
 

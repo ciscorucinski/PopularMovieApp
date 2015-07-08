@@ -16,12 +16,13 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.udacity.rucinskic.spotify_streamer.R;
 import com.udacity.rucinskic.spotify_streamer.enums.API;
+import com.udacity.rucinskic.spotify_streamer.interfaces.NetworkCacheable;
 import com.udacity.rucinskic.spotify_streamer.ui.support.Movie;
 
 public class SecondaryActivity extends AppCompatActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_secondary);    // TODO fix the landscape layout file in part 2. No need for CollapsingToolbarLayout and related items as I don't use them in landscape
@@ -38,7 +39,7 @@ public class SecondaryActivity extends AppCompatActivity {
 
         Intent movieData = getIntent();
 
-        API api = (API) movieData.getSerializableExtra("movie");    // TODO Move the movie data to the Application (App). OnClick in first activity can cause a network retrieval of extra movie data before second activities OnCreate is called.
+        NetworkCacheable<Movie> api = (API) movieData.getSerializableExtra("movie");    // TODO Move the movie data to the Application (App). OnClick in first activity can cause a network retrieval of extra movie data before second activities OnCreate is called.
         int position = movieData.getIntExtra("position", -1);
 
         if (position == -1) startActivity(new Intent(this, MainActivity.class));
@@ -74,7 +75,7 @@ public class SecondaryActivity extends AppCompatActivity {
 
         Picasso.with(this)
                 .load(uri)
-                .centerCrop()
+                .centerInside()
                 .resize(width, height)
                 .into(headerImage);
 
@@ -82,7 +83,7 @@ public class SecondaryActivity extends AppCompatActivity {
 
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_secondary, menu);
 
@@ -91,7 +92,7 @@ public class SecondaryActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.

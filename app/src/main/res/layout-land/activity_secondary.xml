@@ -45,7 +45,6 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_gravity="fill_vertical"
-            android:contentDescription="Movie Poster"
             android:scaleType="centerCrop"
             android:layout_weight="1" />
 

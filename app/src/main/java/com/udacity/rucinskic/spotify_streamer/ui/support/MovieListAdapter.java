@@ -15,11 +15,11 @@ import com.udacity.rucinskic.spotify_streamer.interfaces.OnItemClickListener;
 
 public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Holder> {
 
-    NetworkCacheable<Movie> webSearch;
-    Context context;
-    OnItemClickListener listener;
+    private final NetworkCacheable<Movie> webSearch;
+    private final Context context;
+    private final OnItemClickListener listener;
 
-    public MovieListAdapter(Context context, NetworkCacheable webSearch, OnItemClickListener listener) {
+    public MovieListAdapter(final Context context, final NetworkCacheable<Movie> webSearch, final OnItemClickListener listener) {
 
         this.context = context;
         this.webSearch = webSearch;
@@ -27,25 +27,18 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Hold
 
     }
 
-    public void clearAdapter() {
-
-        this.webSearch = null;
-        this.context = null;
-        this.listener = null;
-
-    }
     @Override
-    public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public Holder onCreateViewHolder(final ViewGroup parent, final int viewType) {
 
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.movie_list_item, parent, false);
+        final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        final View view = inflater.inflate(R.layout.movie_list_item, parent, false);
 
         return new Holder(view, listener);
 
     }
 
     @Override
-    public void onBindViewHolder(Holder holder, int position) {
+    public void onBindViewHolder(final Holder holder, final int position) {
 
         Movie movie = webSearch.getCache().get(position);
 //                movies.get(position);
@@ -62,13 +55,13 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Hold
     public int getItemCount() { return webSearch.getCache().size(); }
 
 
-    class Holder extends RecyclerView.ViewHolder implements RecyclerView.OnClickListener {
+    static class Holder extends RecyclerView.ViewHolder implements RecyclerView.OnClickListener {
 
-        private ImageView imgImage;
-        private TextView txtName;
-        private OnItemClickListener listener;
+        private final ImageView imgImage;
+        private final TextView txtName;
+        private final OnItemClickListener listener;
 
-        public Holder(View itemView, OnItemClickListener listener) {
+        public Holder(final View itemView, final OnItemClickListener listener) {
 
             super(itemView);
 
@@ -83,7 +76,7 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Hold
         }
 
         @Override
-        public void onClick(View v) {
+        public void onClick(final View v) {
 
             listener.onClick(v, getAdapterPosition());
 

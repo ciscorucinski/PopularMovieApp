@@ -11,12 +11,10 @@ import com.udacity.rucinskic.spotify_streamer.R;
 public class MovieOverviewFragment extends Fragment {
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+                             final Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
-
-        return rootView;
+        return inflater.inflate(R.layout.fragment_movie_detail, container, false);
 
     }
 
