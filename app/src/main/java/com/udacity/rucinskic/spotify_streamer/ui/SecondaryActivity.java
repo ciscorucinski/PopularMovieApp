@@ -56,7 +56,7 @@ public class SecondaryActivity extends AppCompatActivity {
         rating.setRating(movie.getRating() / 2);
 
         Uri uri;
-        int width;  // TODO Part 2: test using headerImage's width and height
+        int width;
         int height;
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {

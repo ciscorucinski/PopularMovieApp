@@ -9,9 +9,6 @@ public enum Search implements Searchable {
     PHRASE    { @Override public boolean canSearch(String word) { return false; }               },
     BUFFER    { @Override public boolean canSearch(String word) { return reachedBuffer(word); } };
 
-    // Note: Phrase returns false because there is no efficient way to tell a user is done typing.
-    // They can press the search button to search
-
     // TODO add enums dealing with timing.
 
     private static String searchTerm;

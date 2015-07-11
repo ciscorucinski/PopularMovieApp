@@ -26,7 +26,6 @@ public abstract class BaseSearchTabbedActivity extends AppCompatActivity
         implements SearchView.OnQueryTextListener {
 
     Search searchMethod = Search.BUFFER;
-    private EnumSet<API> tabs;
 
     private SearchView searchView;
 
@@ -40,9 +39,7 @@ public abstract class BaseSearchTabbedActivity extends AppCompatActivity
     private static final String QUERIED_TEXT = "queriedText";
     private static final String SEARCH_METHOD = "searchMethod";
 
-    abstract void collectTabValues();
-
-    void setTabs(final EnumSet<API> tabSet) { this.tabs = tabSet; }
+    abstract EnumSet<API> collectTabValues();
 
     void initializeToolbar() {
 
@@ -56,8 +53,7 @@ public abstract class BaseSearchTabbedActivity extends AppCompatActivity
         adapter = new ViewPagerFragmentAdapter(getSupportFragmentManager());
 
         // Add the tabs
-        collectTabValues();
-        addFragments(tabs);
+        addFragments(collectTabValues());
 
         // Bind the adapter to the tabs
         viewPager.setAdapter(adapter);
@@ -111,63 +107,22 @@ public abstract class BaseSearchTabbedActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
+
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
         final SearchManager manager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-
         final MenuItem searchMenu = menu.findItem(R.id.search);
-        searchView = (SearchView) MenuItemCompat.getActionView(searchMenu);
 
+        searchView = (SearchView) MenuItemCompat.getActionView(searchMenu);
         searchView.setSearchableInfo(manager.getSearchableInfo(getComponentName()));
         searchView.setOnQueryTextListener(this);
 
-        MenuItemCompat.setOnActionExpandListener(
-                searchMenu, new MenuItemCompat.OnActionExpandListener() {
-
-            int previousTabPosition;
-
-            @Override
-            public boolean onMenuItemActionCollapse(final MenuItem item) {
-
-                adapter.clearTabs();
-
-                App.clearData();
-
-                addFragments(tabs);
-                adapter.notifyDataSetChanged();
-
-                viewPager.setAdapter(adapter);
-                tabLayout.setupWithViewPager(viewPager);
-
-                viewPager.setCurrentItem(previousTabPosition, true);
-
-                return true;
-
-            }
-
-            @Override
-            public boolean onMenuItemActionExpand(final MenuItem item) {
-
-                previousTabPosition = viewPager.getCurrentItem();
-
-                adapter.addFragment(MovieListFragment.newInstance(API.SEARCH), API.SEARCH);
-                adapter.notifyDataSetChanged();
-
-                viewPager.setAdapter(adapter);
-                tabLayout.setupWithViewPager(viewPager);
-
-                viewPager.setCurrentItem(adapter.getCount() - 1, true);
-
-                return true;
-
-            }
-
-        });
+        MenuItemCompat.setOnActionExpandListener(searchMenu, new OnInitiateSearchListener());
 
         // Handle Rotation changes for search
 
-        if (savedInstanceStateSearchQuery.length() > 0) {
+        if (wasScreenRotated()) {
 
             searchMenu.expandActionView();
             searchView.setQuery(savedInstanceStateSearchQuery, false);
@@ -202,9 +157,9 @@ public abstract class BaseSearchTabbedActivity extends AppCompatActivity
     @Override
     public boolean onQueryTextChange(final String newText) {
 
-        if (savedInstanceStateSearchQuery.length() > 0) return false;
+        if (wasScreenRotated()) return false;
         if (isFromVoiceSearch) { handleVoiceSearch(newText); }
-        
+
         if (searchMethod.canSearch(newText)) {
 
             performSearch(Search.getSearchableWord());
@@ -214,6 +169,8 @@ public abstract class BaseSearchTabbedActivity extends AppCompatActivity
         return false;
 
     }
+
+    private boolean wasScreenRotated() { return savedInstanceStateSearchQuery.length() > 0; }
 
     private void handleVoiceSearch(final String word) {
 
@@ -225,7 +182,7 @@ public abstract class BaseSearchTabbedActivity extends AppCompatActivity
     @Override
     protected void onNewIntent(final Intent intent) {
 
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+        if (intent.getAction().equals(Intent.ACTION_SEARCH)) {
 
             final String query = intent.getStringExtra(SearchManager.QUERY);
 
@@ -235,6 +192,48 @@ public abstract class BaseSearchTabbedActivity extends AppCompatActivity
             searchView.setQuery(query, false);
 
         }
+
+    }
+
+    private class OnInitiateSearchListener implements MenuItemCompat.OnActionExpandListener {
+
+        int previousTabPosition;
+
+        @Override
+        public boolean onMenuItemActionCollapse(final MenuItem item) {
+
+            adapter.clearTabs();
+            App.clearData();
+
+            setTabs(API.WEB_GROUP);
+            viewPager.setCurrentItem(previousTabPosition, true);
+
+            return true;
+
+        }
+
+        @Override
+        public boolean onMenuItemActionExpand(final MenuItem item) {
+
+            previousTabPosition = viewPager.getCurrentItem();
+
+            setTabs(API.SEARCH_GROUP);
+            viewPager.setCurrentItem(adapter.getCount() - 1, true);
+
+            return true;
+
+        }
+
+        private void setTabs(final Iterable<API> set) {
+
+            addFragments(set);
+            adapter.notifyDataSetChanged();
+
+            viewPager.setAdapter(adapter);
+            tabLayout.setupWithViewPager(viewPager);
+
+        }
+
     }
 
 }

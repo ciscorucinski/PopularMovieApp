@@ -7,6 +7,8 @@ import com.udacity.rucinskic.spotify_streamer.R;
 import com.udacity.rucinskic.spotify_streamer.enums.API;
 import com.udacity.rucinskic.spotify_streamer.enums.Search;
 
+import java.util.EnumSet;
+
 public class MainActivity extends BaseSearchTabbedActivity {
 
     @Override
@@ -40,6 +42,6 @@ public class MainActivity extends BaseSearchTabbedActivity {
     }
 
     @Override
-    void collectTabValues() { setTabs( API.WEB_GROUP); }
+    EnumSet<API> collectTabValues() { return API.WEB_GROUP; }
 
 }

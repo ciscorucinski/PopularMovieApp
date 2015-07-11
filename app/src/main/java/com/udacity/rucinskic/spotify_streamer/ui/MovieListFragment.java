@@ -4,6 +4,8 @@
     import android.os.AsyncTask;
     import android.os.Bundle;
     import android.os.Handler;
+    import android.support.annotation.NonNull;
+    import android.support.annotation.Nullable;
     import android.support.v4.app.Fragment;
     import android.support.v7.widget.GridLayoutManager;
     import android.support.v7.widget.RecyclerView;
@@ -23,7 +25,7 @@
     import org.json.JSONException;
 
 
-public class MovieListFragment extends Fragment
+    public class MovieListFragment extends Fragment
         implements OnItemClickListener, Asyncronizable<String, Void, Void> {
 
     private MovieListAdapter adapter;
@@ -35,33 +37,51 @@ public class MovieListFragment extends Fragment
 
     public static MovieListFragment newInstance(API api) {
 
-        MovieListFragment fragment;
-        App app = App.getInstance();
+        MovieListFragment existingSearchFragment;
 
-        if (api.isFrom(com.udacity.rucinskic.spotify_streamer.enums.API.SEARCH_GROUP)) {
+        existingSearchFragment = getSearchFragmentIfExists(api);
 
-            fragment = App.getSearchFragment();
-
-            if (fragment != null) return fragment;
-
-        }
+        if (existingSearchFragment != null) return existingSearchFragment;
 
         // Either the API isn't from the search_group, or it is from the search_group but doesn't exist
-
-        fragment = new MovieListFragment();
-
-        Bundle args = new Bundle();
-        args.putSerializable(API_STRING, api);
-        fragment.setArguments(args);
+        MovieListFragment newFragment = createNewFragment(api);
 
         // If the API is from the search_group, but the fragment didn't exist, then make the fragment globally available
-        if (api.isFrom(com.udacity.rucinskic.spotify_streamer.enums.API.SEARCH_GROUP)) { App.setSearchFragment(fragment); }
+        if (api.isFrom(API.SEARCH_GROUP)) { App.setSearchFragment(newFragment); }
 
-        return fragment;
+        return newFragment;
 
     }
 
-    @Override
+        @Nullable
+        private static MovieListFragment getSearchFragmentIfExists(API api) {
+
+            if (api.isFrom(API.SEARCH_GROUP)) {
+
+                MovieListFragment fragment = App.getSearchFragment();
+
+                if (fragment != null) return fragment;
+
+            }
+
+            return null;
+
+        }
+
+        @NonNull
+        private static MovieListFragment createNewFragment(API api) {
+
+            MovieListFragment fragment = new MovieListFragment();
+
+            Bundle args = new Bundle();
+            args.putSerializable(API_STRING, api);
+            fragment.setArguments(args);
+
+            return fragment;
+
+        }
+
+        @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
 
@@ -164,7 +184,6 @@ public class MovieListFragment extends Fragment
         protected void onPostExecute(final Void aVoid) {
 
             App.getSearchFragment().getAdapter().notifyDataSetChanged();
-//            adapter.notifyDataSetChanged(); // This needs to occur on the main thread
 
         }
 

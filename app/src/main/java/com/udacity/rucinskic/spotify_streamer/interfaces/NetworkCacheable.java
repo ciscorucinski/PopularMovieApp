@@ -8,7 +8,6 @@ public interface NetworkCacheable<T> { // TODO not the best name. Rename for par
 
     boolean add(T entity);
     void clearCache();
-
     List<T> getCache();
 
     Uri getUri(String...parameters);

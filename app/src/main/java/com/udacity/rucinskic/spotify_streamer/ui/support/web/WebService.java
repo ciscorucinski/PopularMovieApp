@@ -22,8 +22,6 @@ public class WebService {
 
     public void acquireDataWithCallback(final Handler.Callback callback) throws JSONException {
 
-        // These two need to be declared outside the try/catch
-        // so that they can be closed in the finally block.
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
         Message jsonObject;

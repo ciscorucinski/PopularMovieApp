@@ -13,42 +13,35 @@ import java.util.List;
 
 public enum API implements NetworkCacheable<Movie>, Groupable<API> {
 
-    POPULAR     ("Most Popular"),
-    TOP_RATED   ("Highest Rated"),
-    UPCOMING    ("Upcoming"),
-    SEARCH      ("Search");
+    POPULAR     ("Most Popular",    Uri.parse("http://api.themoviedb.org/3/movie/").buildUpon()),
+    TOP_RATED   ("Highest Rated",   Uri.parse("http://api.themoviedb.org/3/movie/").buildUpon()),
+    UPCOMING    ("Upcoming",        Uri.parse("http://api.themoviedb.org/3/movie/").buildUpon()),
+    SEARCH      ("Search",    Uri.parse("http://api.themoviedb.org/3/search/movie").buildUpon());
 
     public static final EnumSet<API> WEB_GROUP = EnumSet.of(POPULAR, TOP_RATED, UPCOMING);
     public static final EnumSet<API> SEARCH_GROUP = EnumSet.of(SEARCH);
     // private static final EnumSet<API> OFFLINE_GROUP = EnumSet.noneOf(API.class); // TODO part 2: make public and create enum constants for offline support - like favorites
 
     private final String title;
+    private final Uri.Builder uri;
     private final List<Movie> movies;
 
-    API(final String title) {
+    API(final String title, Uri.Builder uri) {
 
         this.title = title;
+        this.uri = uri;
         this.movies = new ArrayList<>(App.getMovieCollectionLimit());
 
     }
 
-    public Uri getUri(final String...parameters) {   // TODO refactor this for part 2. It appears messy
+    public Uri getUri(final String...parameters) {
 
-        if (this == SEARCH) {
+        if (this.isFrom(WEB_GROUP)) { uri.appendPath(name().toLowerCase()); }
+        else if (this.isFrom(SEARCH_GROUP)) { uri.appendQueryParameter("query", parameters[0]); }
 
-            if (parameters.length == 0) return null;
+        uri.appendQueryParameter("api_key", App.getApiKey());
 
-            return Uri.parse("http://api.themoviedb.org/3/search/movie?").buildUpon()
-                    .appendQueryParameter("api_key", App.getApiKey())
-                    .appendQueryParameter("query", parameters[0])
-                    .build();
-
-        }
-
-        return Uri.parse("http://api.themoviedb.org/3/movie/").buildUpon()
-                .appendPath(this.name().toLowerCase())
-                .appendQueryParameter("api_key", App.getApiKey())
-                .build();
+        return uri.build();
 
     }
 
