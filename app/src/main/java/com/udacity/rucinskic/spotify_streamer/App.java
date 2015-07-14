@@ -35,7 +35,7 @@ public class App extends Application {
 
     public static void clearData() {
 
-        API.SEARCH.clearCache();
+        API.SEARCH.clearDownloadables();
 
     }
 }

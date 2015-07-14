@@ -4,7 +4,7 @@ import java.util.EnumSet;
 
 public interface Groupable<T extends Enum<T>> {
 
-    EnumSet<T> getParentGroup();
+    EnumSet<T> getGroup();
     boolean isFrom(EnumSet set);
 
 }
