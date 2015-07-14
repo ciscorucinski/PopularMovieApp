@@ -78,7 +78,7 @@ public class JsonHandlerCallback implements Handler.Callback {
                 movie.setImageUriLarge(uriLarge);
                 movie.setImageUriSmall(uriSmall);
 
-                storage.add(movie);
+                storage.store(movie);
 
             }
 
