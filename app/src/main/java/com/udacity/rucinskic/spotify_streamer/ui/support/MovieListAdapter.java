@@ -10,16 +10,16 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.udacity.rucinskic.spotify_streamer.R;
-import com.udacity.rucinskic.spotify_streamer.interfaces.NetworkCacheable;
+import com.udacity.rucinskic.spotify_streamer.interfaces.Downloadable;
 import com.udacity.rucinskic.spotify_streamer.interfaces.OnItemClickListener;
 
 public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Holder> {
 
-    private final NetworkCacheable<Movie> webSearch;
+    private final Downloadable<Movie> webSearch;
     private final Context context;
     private final OnItemClickListener listener;
 
-    public MovieListAdapter(final Context context, final NetworkCacheable<Movie> webSearch, final OnItemClickListener listener) {
+    public MovieListAdapter(final Context context, final Downloadable<Movie> webSearch, final OnItemClickListener listener) {
 
         this.context = context;
         this.webSearch = webSearch;
@@ -40,8 +40,7 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Hold
     @Override
     public void onBindViewHolder(final Holder holder, final int position) {
 
-        Movie movie = webSearch.getCache().get(position);
-//                movies.get(position);
+        Movie movie = webSearch.getDownloadables().get(position);
 
         holder.txtName.setText(movie.getName());
         Picasso.with(context)
@@ -52,8 +51,9 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Hold
     }
 
     @Override
-    public int getItemCount() { return webSearch.getCache().size(); }
+    public int getItemCount() { return webSearch.getDownloadables().size(); }
 
+    public void clear() { this.webSearch.clearDownloadables(); }
 
     static class Holder extends RecyclerView.ViewHolder implements RecyclerView.OnClickListener {
 

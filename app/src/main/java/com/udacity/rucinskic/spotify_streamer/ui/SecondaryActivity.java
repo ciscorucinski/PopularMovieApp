@@ -7,8 +7,6 @@ import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -16,7 +14,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.udacity.rucinskic.spotify_streamer.R;
 import com.udacity.rucinskic.spotify_streamer.enums.API;
-import com.udacity.rucinskic.spotify_streamer.interfaces.NetworkCacheable;
+import com.udacity.rucinskic.spotify_streamer.interfaces.Downloadable;
 import com.udacity.rucinskic.spotify_streamer.ui.support.Movie;
 
 public class SecondaryActivity extends AppCompatActivity {
@@ -39,7 +37,7 @@ public class SecondaryActivity extends AppCompatActivity {
 
         Intent movieData = getIntent();
 
-        NetworkCacheable<Movie> api = (API) movieData.getSerializableExtra("movie");    // TODO Move the movie data to the Application (App). OnClick in first activity can cause a network retrieval of extra movie data before second activities OnCreate is called.
+        Downloadable<Movie> api = (API) movieData.getSerializableExtra("movie");    // TODO Move the movie data to the Application (App). OnClick in first activity can cause a network retrieval of extra movie data before second activities OnCreate is called.
         int position = movieData.getIntExtra("position", -1);
 
         if (position == -1) startActivity(new Intent(this, MainActivity.class));
@@ -47,7 +45,7 @@ public class SecondaryActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        movie = api.getCache().get(position);
+        movie = api.getDownloadables().get(position);
 
         collapsingToolbar.setTitle(movie.getName());
         toolbar.setTitle(movie.getName());
@@ -78,27 +76,6 @@ public class SecondaryActivity extends AppCompatActivity {
                 .centerInside()
                 .resize(width, height)
                 .into(headerImage);
-
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(final Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_secondary, menu);
-
-        return true;
-
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        return super.onOptionsItemSelected(item);
 
     }
 

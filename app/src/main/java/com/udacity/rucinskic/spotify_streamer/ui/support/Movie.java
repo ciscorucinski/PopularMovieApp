@@ -53,12 +53,9 @@ public class Movie {
         try {
 
             int year = Integer.parseInt(date.substring(0, 4));
-//            int month = Integer.parseInt(date.substring(5, 7));
-//            int day = Integer.parseInt(date.substring(8, 10));
-
             release = String.valueOf(year);
 
-        } catch (Exception ignore) {} // Default date of 0000 / 00 / 00 will be created instead
+        } catch (Exception ignore) {}
 
     }
 

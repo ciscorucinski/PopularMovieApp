@@ -5,7 +5,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.udacity.rucinskic.spotify_streamer.App;
-import com.udacity.rucinskic.spotify_streamer.interfaces.NetworkCacheable;
+import com.udacity.rucinskic.spotify_streamer.interfaces.Downloadable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ public class ViewPagerFragmentAdapter extends FragmentPagerAdapter {
 
     public ViewPagerFragmentAdapter(final FragmentManager manager) { super(manager); }
 
-    public void addFragment(final Fragment fragment, final NetworkCacheable tab) {
+    public void addFragment(final Fragment fragment, final Downloadable tab) {
 
         fragments.add(fragment);
         tabTitles.add(tab.toString());

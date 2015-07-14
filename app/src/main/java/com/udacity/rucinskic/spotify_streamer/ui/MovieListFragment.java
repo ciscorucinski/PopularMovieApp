@@ -53,35 +53,35 @@
 
     }
 
-        @Nullable
-        private static MovieListFragment getSearchFragmentIfExists(API api) {
+    @Nullable
+    private static MovieListFragment getSearchFragmentIfExists(API api) {
 
-            if (api.isFrom(API.SEARCH_GROUP)) {
+        if (api.isFrom(API.SEARCH_GROUP)) {
 
-                MovieListFragment fragment = App.getSearchFragment();
+            MovieListFragment fragment = App.getSearchFragment();
 
-                if (fragment != null) return fragment;
-
-            }
-
-            return null;
+            if (fragment != null) return fragment;
 
         }
 
-        @NonNull
-        private static MovieListFragment createNewFragment(API api) {
+        return null;
 
-            MovieListFragment fragment = new MovieListFragment();
+    }
 
-            Bundle args = new Bundle();
-            args.putSerializable(API_STRING, api);
-            fragment.setArguments(args);
+    @NonNull
+    private static MovieListFragment createNewFragment(API api) {
 
-            return fragment;
+        MovieListFragment fragment = new MovieListFragment();
 
-        }
+        Bundle args = new Bundle();
+        args.putSerializable(API_STRING, api);
+        fragment.setArguments(args);
 
-        @Override
+        return fragment;
+
+    }
+
+    @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
 
@@ -89,15 +89,18 @@
 
         api = (API) getArguments().getSerializable(API_STRING);
 
+        adapter = new MovieListAdapter(getActivity(), api, this);
+
         assert api != null;
         if (api.isFrom(API.WEB_GROUP)) {
 
+            adapter.clear();
             AsyncTask<String, Void, Void> getMovies = getAsyncTask(api);
             getMovies.execute();
 
         }
 
-        adapter = new MovieListAdapter(getActivity(), api, this);
+
 
         RecyclerView movieListView;
 
