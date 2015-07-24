@@ -94,23 +94,21 @@
         assert api != null;
         if (api.isFrom(API.WEB_GROUP)) {
 
-            adapter.clear();
+            //            adapter.clear();
             AsyncTask<String, Void, Void> getMovies = getAsyncTask(api);
             getMovies.execute();
 
         }
 
-
-
         RecyclerView movieListView;
 
         movieListView = (RecyclerView) rootView.findViewById(R.id.movie_list);
         movieListView.setAdapter(adapter);
+        movieListView.setItemViewCacheSize(App.getMovieCollectionLimit());
         movieListView.setLayoutManager(
                 new GridLayoutManager(  // Changes number of columns based on form-factor and orientation
                         getActivity(),
                         getResources().getInteger(R.integer.columns)));
-
 
         return rootView;
 

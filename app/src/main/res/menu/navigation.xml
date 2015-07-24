@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/movie_heading"
+        android:title="Movies"
+        android:enabled="false">
+
+        <menu
+            android:id="@+id/navigationGroupMovies"
+            android:checkableBehavior="single">
+
+            <item
+                android:id="@+id/navigationOnline"
+                android:icon="@drawable/ic_movie_creation_white_24dp"
+                android:title="Find Online"/>
+
+            <item
+                android:id="@+id/navigationMyCollection"
+                android:icon="@drawable/abc_btn_rating_star_on_mtrl_alpha"
+                android:title="My Collections"/>
+
+        </menu>
+
+    </item>
+
+    <group
+        android:id="@+id/navigationGroupSetting"
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/navigationSetting"
+            android:icon="@drawable/ic_settings_white_24dp"
+            android:title="Settings"/>
+
+
+    </group>
+
+</menu>

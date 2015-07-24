@@ -27,7 +27,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:fitsSystemWindows="true"
-                app:layout_collapseMode="none" />
+                app:layout_collapseMode="none"
+                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                android:layout_marginTop="25dp"/>
 
         </android.support.design.widget.CollapsingToolbarLayout>
 

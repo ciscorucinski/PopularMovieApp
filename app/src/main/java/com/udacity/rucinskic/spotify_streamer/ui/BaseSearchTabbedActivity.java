@@ -5,14 +5,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.udacity.rucinskic.spotify_streamer.App;
 import com.udacity.rucinskic.spotify_streamer.R;
@@ -23,12 +27,14 @@ import com.udacity.rucinskic.spotify_streamer.ui.support.ViewPagerFragmentAdapte
 import java.util.EnumSet;
 
 public abstract class BaseSearchTabbedActivity extends AppCompatActivity
-        implements SearchView.OnQueryTextListener {
+        implements SearchView.OnQueryTextListener, NavigationView.OnNavigationItemSelectedListener,
+                   View.OnClickListener {
 
     Search searchMethod = Search.BUFFER;
 
-    private SearchView searchView;
+    public DrawerLayout drawerLayout;
 
+    private SearchView searchView;
     private ViewPagerFragmentAdapter adapter;
     private ViewPager viewPager;
     private TabLayout tabLayout;
@@ -47,6 +53,14 @@ public abstract class BaseSearchTabbedActivity extends AppCompatActivity
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+
+        NavigationView view = (NavigationView) findViewById(R.id.navigationView);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationIcon(R.drawable.ic_menu_white_24dp);
+        toolbar.setNavigationOnClickListener(this);
+        view.setNavigationItemSelectedListener(this);
+
         // Initialize all components. Tabs, Pager, and Adapter
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         viewPager = (ViewPager) findViewById(R.id.pager);
@@ -58,6 +72,13 @@ public abstract class BaseSearchTabbedActivity extends AppCompatActivity
         // Bind the adapter to the tabs
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
+
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        drawerLayout.openDrawer(GravityCompat.START);
 
     }
 
@@ -135,10 +156,18 @@ public abstract class BaseSearchTabbedActivity extends AppCompatActivity
         // Variable is initialized and declared as class global. Will not be null
         switch (searchMethod) {
 
-            case CHARACTER:     menu.findItem(R.id.search_character).setChecked(true); break;
-            case WORD:          menu.findItem(R.id.search_word).setChecked(true); break;
-            case PHRASE:        menu.findItem(R.id.search_phrase).setChecked(true); break;
-            case BUFFER:        menu.findItem(R.id.search_buffer).setChecked(true); break;
+            case CHARACTER:
+                menu.findItem(R.id.search_character).setChecked(true);
+                break;
+            case WORD:
+                menu.findItem(R.id.search_word).setChecked(true);
+                break;
+            case PHRASE:
+                menu.findItem(R.id.search_phrase).setChecked(true);
+                break;
+            case BUFFER:
+                menu.findItem(R.id.search_buffer).setChecked(true);
+                break;
 
         }
 
@@ -158,7 +187,9 @@ public abstract class BaseSearchTabbedActivity extends AppCompatActivity
     public boolean onQueryTextChange(final String newText) {
 
         if (wasScreenRotated()) return false;
-        if (isFromVoiceSearch) { handleVoiceSearch(newText); }
+        if (isFromVoiceSearch) {
+            handleVoiceSearch(newText);
+        }
 
         if (searchMethod.canSearch(newText)) {
 
@@ -205,7 +236,7 @@ public abstract class BaseSearchTabbedActivity extends AppCompatActivity
             adapter.clearTabs();
             App.clearData();
 
-            setTabs(API.WEB_GROUP);
+            addTabs(API.WEB_GROUP);
             viewPager.setCurrentItem(previousTabPosition, true);
 
             return true;
@@ -217,14 +248,14 @@ public abstract class BaseSearchTabbedActivity extends AppCompatActivity
 
             previousTabPosition = viewPager.getCurrentItem();
 
-            setTabs(API.SEARCH_GROUP);
+            addTabs(API.SEARCH_GROUP);
             viewPager.setCurrentItem(adapter.getCount() - 1, true);
 
             return true;
 
         }
 
-        private void setTabs(final Iterable<API> set) {
+        private void addTabs(final Iterable<API> set) {
 
             addFragments(set);
             adapter.notifyDataSetChanged();

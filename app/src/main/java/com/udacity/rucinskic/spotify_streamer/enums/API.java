@@ -3,8 +3,8 @@ package com.udacity.rucinskic.spotify_streamer.enums;
 import android.net.Uri;
 
 import com.udacity.rucinskic.spotify_streamer.App;
-import com.udacity.rucinskic.spotify_streamer.interfaces.Groupable;
 import com.udacity.rucinskic.spotify_streamer.interfaces.Downloadable;
+import com.udacity.rucinskic.spotify_streamer.interfaces.Groupable;
 import com.udacity.rucinskic.spotify_streamer.ui.support.Movie;
 
 import java.util.ArrayList;
@@ -23,8 +23,6 @@ public enum API implements Downloadable<Movie>, Groupable<API> {
     public static final EnumSet<API> WEB_GROUP = EnumSet.of(POPULAR, TOP_RATED, UPCOMING);
     public static final EnumSet<API> SEARCH_GROUP = EnumSet.of(SEARCH);
     private static final EnumSet<API> OFFLINE_GROUP = EnumSet.of(FAVORITE);
-
-    private static EnumSet<API> CACHED_GROUP;
 
     private final String title;
     private final Uri.Builder uri;

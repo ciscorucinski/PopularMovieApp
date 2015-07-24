@@ -19,7 +19,7 @@
         android:minLines="3"
         android:maxLines="3"
         android:background="#88455A64"
-        android:textColor="@color/primary_text"
+        android:textColor="@color/primary_text_light"
         android:gravity="center_horizontal|center_vertical"
         android:layout_gravity="center_horizontal|bottom"/>
 </FrameLayout>

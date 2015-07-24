@@ -2,6 +2,7 @@ package com.udacity.rucinskic.spotify_streamer.ui;
 
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.udacity.rucinskic.spotify_streamer.R;
 import com.udacity.rucinskic.spotify_streamer.enums.API;
@@ -22,6 +23,24 @@ public class MainActivity extends BaseSearchTabbedActivity {
     }
 
     @Override
+    public boolean onNavigationItemSelected(MenuItem menuItem) {
+
+        //        switch (menuItem.getItemId()) {
+        //
+        //            case R.id.navigationSetting: // Get the new Shared Preferences activity
+        //
+        //            case R.id.navigationMyCollection:
+        //
+        //        }
+        //
+        //        drawerLayout.closeDrawer(GravityCompat.START);
+
+        return true;
+
+    }
+
+
+    @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
 
         switch (item.getItemId()) {
@@ -36,6 +55,8 @@ public class MainActivity extends BaseSearchTabbedActivity {
         }
 
         item.setChecked(true);
+
+        Toast.makeText(MainActivity.this, "Hello World", Toast.LENGTH_SHORT).show();
 
         return super.onOptionsItemSelected(item);
 
