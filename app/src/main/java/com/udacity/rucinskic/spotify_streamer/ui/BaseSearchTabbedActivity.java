@@ -3,7 +3,9 @@ package com.udacity.rucinskic.spotify_streamer.ui;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -22,15 +24,16 @@ import com.udacity.rucinskic.spotify_streamer.App;
 import com.udacity.rucinskic.spotify_streamer.R;
 import com.udacity.rucinskic.spotify_streamer.enums.API;
 import com.udacity.rucinskic.spotify_streamer.enums.Search;
+import com.udacity.rucinskic.spotify_streamer.ui.support.SettingsActivity;
 import com.udacity.rucinskic.spotify_streamer.ui.support.ViewPagerFragmentAdapter;
 
 import java.util.EnumSet;
 
 public abstract class BaseSearchTabbedActivity extends AppCompatActivity
         implements SearchView.OnQueryTextListener, NavigationView.OnNavigationItemSelectedListener,
-                   View.OnClickListener {
+                   View.OnClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
-    Search searchMethod = Search.BUFFER;
+    Search searchMethod;
 
     public DrawerLayout drawerLayout;
 
@@ -45,21 +48,26 @@ public abstract class BaseSearchTabbedActivity extends AppCompatActivity
     private static final String QUERIED_TEXT = "queriedText";
     private static final String SEARCH_METHOD = "searchMethod";
 
-    abstract EnumSet<API> collectTabValues();
+    private static EnumSet<API> displayedTabs;
+
+    abstract EnumSet<API> getDefaultTabs();
+
+    public void setCurrentTabs(EnumSet<API> tabs) {
+
+        displayedTabs = tabs;
+
+        clearAllTabs();
+
+        addFragments(displayedTabs);
+        viewPager.setCurrentItem(0, true);
+
+        viewPager.setAdapter(adapter);
+        tabLayout.setupWithViewPager(viewPager);
+    }
+
+    public void closeDrawer() { drawerLayout.closeDrawer(GravityCompat.START); }
 
     void initializeToolbar() {
-
-        // Setup the toolbar
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
-
-        NavigationView view = (NavigationView) findViewById(R.id.navigationView);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationIcon(R.drawable.ic_menu_white_24dp);
-        toolbar.setNavigationOnClickListener(this);
-        view.setNavigationItemSelectedListener(this);
 
         // Initialize all components. Tabs, Pager, and Adapter
         tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -67,11 +75,32 @@ public abstract class BaseSearchTabbedActivity extends AppCompatActivity
         adapter = new ViewPagerFragmentAdapter(getSupportFragmentManager());
 
         // Add the tabs
-        addFragments(collectTabValues());
+        if (displayedTabs == null) displayedTabs = getDefaultTabs();
+        addFragments(displayedTabs);
 
         // Bind the adapter to the tabs
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
+
+        PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+                .registerOnSharedPreferenceChangeListener(this);
+
+        // Initialize the Navigation View and select the first item
+        NavigationView navigationView = (NavigationView) findViewById(R.id.navigationView);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+
+        navigationView.setNavigationItemSelectedListener(this);
+        navigationView.getMenu().getItem(0).setChecked(true);
+
+        // Setup the toolbar
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationIcon(R.drawable.ic_menu_white_24dp);
+        toolbar.setNavigationOnClickListener(this);
+        navigationView.setNavigationItemSelectedListener(this);
+
 
     }
 
@@ -101,6 +130,8 @@ public abstract class BaseSearchTabbedActivity extends AppCompatActivity
 
         }
 
+        adapter.notifyDataSetChanged();
+
     }
 
     @Override
@@ -109,6 +140,8 @@ public abstract class BaseSearchTabbedActivity extends AppCompatActivity
         savedInstanceStateSearchQuery = savedInstanceState.getCharSequence(QUERIED_TEXT);
         searchMethod = Search.valueOf(savedInstanceState.getString(SEARCH_METHOD));
 
+        //        displayedTabs = (EnumSet<API>)savedInstanceState.getSerializable(DISPLAYED_TABS);
+
         super.onSaveInstanceState(savedInstanceState);
 
     }
@@ -116,13 +149,34 @@ public abstract class BaseSearchTabbedActivity extends AppCompatActivity
     @Override
     public void onSaveInstanceState(final Bundle savedInstanceState) {
 
+        if (searchMethod != null)
         savedInstanceState.putString(SEARCH_METHOD, searchMethod.name());
 
         if (searchView != null)
             savedInstanceState.putCharSequence(QUERIED_TEXT, searchView.getQuery());
 
+        //        if (displayedTabs != null)
+        //            savedInstanceState.putSerializable(DISPLAYED_TABS, displayedTabs.toArray(API.values()));
 
         super.onSaveInstanceState(savedInstanceState);
+
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+
+        super.onCreate(savedInstanceState);
+
+        // This static call will reset default values only on the first ever read
+        PreferenceManager.setDefaultValues(getBaseContext(), R.xml.preferences, false);
+
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+
+        String enumString = pref.getString(
+                getString(R.string.pref_search_method_key),
+                Search.BUFFER.name());
+
+        searchMethod = Search.valueOf(enumString);
 
     }
 
@@ -150,24 +204,6 @@ public abstract class BaseSearchTabbedActivity extends AppCompatActivity
             savedInstanceStateSearchQuery = "";
 
             App.notifySearchFragmentAdapter();
-
-        }
-
-        // Variable is initialized and declared as class global. Will not be null
-        switch (searchMethod) {
-
-            case CHARACTER:
-                menu.findItem(R.id.search_character).setChecked(true);
-                break;
-            case WORD:
-                menu.findItem(R.id.search_word).setChecked(true);
-                break;
-            case PHRASE:
-                menu.findItem(R.id.search_phrase).setChecked(true);
-                break;
-            case BUFFER:
-                menu.findItem(R.id.search_buffer).setChecked(true);
-                break;
 
         }
 
@@ -226,6 +262,24 @@ public abstract class BaseSearchTabbedActivity extends AppCompatActivity
 
     }
 
+    private void addTabs(final Iterable<API> set) {
+
+        addFragments(set);
+
+        viewPager.setAdapter(adapter);
+        tabLayout.setupWithViewPager(viewPager);
+
+        //        adapter.notifyDataSetChanged();
+
+    }
+
+    private void clearAllTabs() {
+
+        adapter.clearTabs();
+        App.clearData();
+
+    }
+
     private class OnInitiateSearchListener implements MenuItemCompat.OnActionExpandListener {
 
         int previousTabPosition;
@@ -233,10 +287,9 @@ public abstract class BaseSearchTabbedActivity extends AppCompatActivity
         @Override
         public boolean onMenuItemActionCollapse(final MenuItem item) {
 
-            adapter.clearTabs();
-            App.clearData();
+            clearAllTabs();
 
-            addTabs(API.WEB_GROUP);
+            addTabs(displayedTabs);
             viewPager.setCurrentItem(previousTabPosition, true);
 
             return true;
@@ -255,15 +308,49 @@ public abstract class BaseSearchTabbedActivity extends AppCompatActivity
 
         }
 
-        private void addTabs(final Iterable<API> set) {
+    }
 
-            addFragments(set);
-            adapter.notifyDataSetChanged();
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 
-            viewPager.setAdapter(adapter);
-            tabLayout.setupWithViewPager(viewPager);
+        if (key.equals(getString(R.string.pref_search_method_key))) {
+
+            String enumString = sharedPreferences.getString(
+                    getString(R.string.pref_search_method_key),
+                    Search.BUFFER.name());
+
+            searchMethod = Search.valueOf(enumString);
 
         }
+
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+
+        item.setChecked(true);
+
+        switch (item.getItemId()) {
+
+            case R.id.navigationSetting:
+
+                startActivity(new Intent(this, SettingsActivity.class));
+                break;
+
+            case R.id.navigationOnline:
+                setCurrentTabs(API.WEB_GROUP);
+                break;
+            case R.id.navigationMyCollection:
+                setCurrentTabs(API.OFFLINE_GROUP);
+                break;
+
+            default: // Do nothing
+
+        }
+
+        closeDrawer();
+
+        return true;
 
     }
 

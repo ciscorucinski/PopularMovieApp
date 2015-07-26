@@ -21,7 +21,6 @@ public class ViewPagerFragmentAdapter extends FragmentPagerAdapter {
 
         fragments.add(fragment);
         tabTitles.add(tab.toString());
-        this.notifyDataSetChanged();
 
     }
 
@@ -29,7 +28,16 @@ public class ViewPagerFragmentAdapter extends FragmentPagerAdapter {
 
         fragments.clear();
         tabTitles.clear();
-        this.notifyDataSetChanged();
+
+    }
+
+    @Override
+    public int getItemPosition(Object item) {
+
+        int index = fragments.indexOf(item);
+
+        if (index == -1) return POSITION_NONE;
+        return index;
 
     }
 
@@ -40,6 +48,10 @@ public class ViewPagerFragmentAdapter extends FragmentPagerAdapter {
     public int getCount() { return fragments.size(); }
 
     @Override
-    public CharSequence getPageTitle(final int position) { return tabTitles.get(position); }
+    public CharSequence getPageTitle(final int position) {
+
+        return tabTitles.get(position);
+
+    }
 
 }

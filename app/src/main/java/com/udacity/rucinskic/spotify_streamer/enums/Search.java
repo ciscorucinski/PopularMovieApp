@@ -6,8 +6,14 @@ public enum Search implements Searchable {
 
     CHARACTER { @Override public boolean canSearch(String word) { return isNotEmpty(word); }    },
     WORD      { @Override public boolean canSearch(String word) { return isNewWord(word); }     },
-    PHRASE    { @Override public boolean canSearch(String word) { return false; }               },
-    BUFFER    { @Override public boolean canSearch(String word) { return reachedBuffer(word); } };
+    BUFFER {
+        @Override
+        public boolean canSearch(String word) { return reachedBuffer(word); }
+    },
+    PHRASE {
+        @Override
+        public boolean canSearch(String word) { return false; }
+    };
 
     // TODO add enums dealing with timing.
 

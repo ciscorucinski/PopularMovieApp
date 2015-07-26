@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/pref_header_search">
+
+        <ListPreference
+            android:key="@string/pref_search_method_key"
+            android:title="@string/pref_search_method"
+            android:summary="@string/pref_search_method_description"
+            android:defaultValue="BUFFER"
+            android:entries="@array/search_method"
+            android:entryValues="@array/search_method_values"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_header_local">
+
+        <SwitchPreference
+            android:key="@string/pref_local_is_cached_key"
+            android:title="@string/pref_local_is_cached"
+            android:summary="@string/pref_local_is_cached_description"/>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

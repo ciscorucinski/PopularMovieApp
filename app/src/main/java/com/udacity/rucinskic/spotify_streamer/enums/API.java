@@ -18,11 +18,13 @@ public enum API implements Downloadable<Movie>, Groupable<API> {
     UPCOMING    ("Upcoming",        Uri.parse("http://api.themoviedb.org/3/movie/").buildUpon()),
     SEARCH      ("Search",    Uri.parse("http://api.themoviedb.org/3/search/movie").buildUpon()),
 
-    FAVORITE    ("Favorites", Uri.parse("").buildUpon());
+    FAVORITE("Favorites", Uri.parse("http://api.themoviedb.org/3/movie/").buildUpon()),
+    WILL_WATCH("Want To Watch", Uri.parse("http://api.themoviedb.org/3/movie/").buildUpon()),
+    WATCHED("Watched", Uri.parse("http://api.themoviedb.org/3/movie/").buildUpon());
 
     public static final EnumSet<API> WEB_GROUP = EnumSet.of(POPULAR, TOP_RATED, UPCOMING);
     public static final EnumSet<API> SEARCH_GROUP = EnumSet.of(SEARCH);
-    private static final EnumSet<API> OFFLINE_GROUP = EnumSet.of(FAVORITE);
+    public static final EnumSet<API> OFFLINE_GROUP = EnumSet.of(FAVORITE, WATCHED, WILL_WATCH);
 
     private final String title;
     private final Uri.Builder uri;
