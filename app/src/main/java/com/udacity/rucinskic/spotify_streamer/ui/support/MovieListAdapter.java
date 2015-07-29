@@ -12,6 +12,7 @@ import com.squareup.picasso.Picasso;
 import com.udacity.rucinskic.spotify_streamer.R;
 import com.udacity.rucinskic.spotify_streamer.interfaces.Downloadable;
 import com.udacity.rucinskic.spotify_streamer.interfaces.OnItemClickListener;
+import com.udacity.rucinskic.spotify_streamer.ui.support.model.Movie;
 
 public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Holder> {
 

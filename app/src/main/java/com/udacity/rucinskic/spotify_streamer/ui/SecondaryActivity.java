@@ -15,7 +15,7 @@ import com.squareup.picasso.Picasso;
 import com.udacity.rucinskic.spotify_streamer.R;
 import com.udacity.rucinskic.spotify_streamer.enums.API;
 import com.udacity.rucinskic.spotify_streamer.interfaces.Downloadable;
-import com.udacity.rucinskic.spotify_streamer.ui.support.Movie;
+import com.udacity.rucinskic.spotify_streamer.ui.support.model.Movie;
 
 public class SecondaryActivity extends AppCompatActivity {
 
@@ -49,9 +49,9 @@ public class SecondaryActivity extends AppCompatActivity {
 
         collapsingToolbar.setTitle(movie.getName());
         toolbar.setTitle(movie.getName());
-        releaseYear.setText(movie.getDateRelease());
+        releaseYear.setText(movie.getReleaseDate().getYear());
         overview.setText(movie.getOverview());
-        rating.setRating(movie.getRating() / 2);
+        rating.setRating(movie.getRating().getFloatValue() / 2);
 
         Uri uri;
         int width;

@@ -5,7 +5,8 @@ import android.os.Handler;
 import android.os.Message;
 
 import com.udacity.rucinskic.spotify_streamer.enums.API;
-import com.udacity.rucinskic.spotify_streamer.ui.support.Movie;
+import com.udacity.rucinskic.spotify_streamer.ui.support.model.Movie;
+import com.udacity.rucinskic.spotify_streamer.ui.support.model.Rating;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,6 +27,7 @@ public class JsonHandlerCallback implements Handler.Callback {
         final String POSTER = "poster_path";
         final String RELEASE = "release_date";
         final String VOTE = "vote_average";
+        final String NUM_VOTES = "vote_count";
         final String OVERVIEW = "overview";
 
         try {
@@ -42,6 +44,7 @@ public class JsonHandlerCallback implements Handler.Callback {
                 String releaseDate = movieJson.getString(RELEASE);
                 String title = movieJson.getString(TITLE);
                 double voteAverage = movieJson.getDouble(VOTE);
+                int voteCount = movieJson.getInt(NUM_VOTES);
                 String overview = movieJson.getString(OVERVIEW);
                 String filePath = movieJson.getString(POSTER);
 
@@ -73,10 +76,9 @@ public class JsonHandlerCallback implements Handler.Callback {
                 movie = new Movie(title, uri);
 
                 movie.setOverview(overview);
-                movie.setRating(voteAverage);
+                movie.setRating(new Rating(voteAverage, voteCount));
                 movie.setDateRelease(releaseDate);
                 movie.setImageUriLarge(uriLarge);
-                movie.setImageUriSmall(uriSmall);
 
                 storage.store(movie);
 

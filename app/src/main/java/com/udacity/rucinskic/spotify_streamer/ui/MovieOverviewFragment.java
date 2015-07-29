@@ -14,7 +14,7 @@ public class MovieOverviewFragment extends Fragment {
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
 
-        return inflater.inflate(R.layout.fragment_movie_detail, container, false);
+        return inflater.inflate(R.layout.fragment_movie_detail_old, container, false);
 
     }
 

@@ -2,7 +2,7 @@ package com.udacity.rucinskic.spotify_streamer.ui.support;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.udacity.rucinskic.spotify_streamer.App;
 import com.udacity.rucinskic.spotify_streamer.interfaces.Downloadable;
@@ -10,7 +10,7 @@ import com.udacity.rucinskic.spotify_streamer.interfaces.Downloadable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ViewPagerFragmentAdapter extends FragmentPagerAdapter {
+public class ViewPagerFragmentAdapter extends FragmentStatePagerAdapter {
 
     private final List<Fragment> fragments = new ArrayList<>(App.getNumberOfApiCalls());
     private final List<String> tabTitles = new ArrayList<>(App.getNumberOfApiCalls());

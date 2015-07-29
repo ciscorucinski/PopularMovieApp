@@ -5,7 +5,7 @@ import android.net.Uri;
 import com.udacity.rucinskic.spotify_streamer.App;
 import com.udacity.rucinskic.spotify_streamer.interfaces.Downloadable;
 import com.udacity.rucinskic.spotify_streamer.interfaces.Groupable;
-import com.udacity.rucinskic.spotify_streamer.ui.support.Movie;
+import com.udacity.rucinskic.spotify_streamer.ui.support.model.Movie;
 
 import java.util.ArrayList;
 import java.util.EnumSet;

@@ -68,7 +68,7 @@
                     android:name="com.udacity.rucinskic.spotify_streamer.ui.MovieOverviewFragment"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    tools:layout="@layout/fragment_movie_detail" />
+                    tools:layout="@layout/fragment_movie_detail_old"/>
 
             </android.support.v4.widget.NestedScrollView>
 

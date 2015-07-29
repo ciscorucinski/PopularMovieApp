@@ -62,6 +62,7 @@ public abstract class BaseSearchTabbedActivity extends AppCompatActivity
         viewPager.setCurrentItem(0, true);
 
         viewPager.setAdapter(adapter);
+        tabLayout.removeAllTabs();
         tabLayout.setupWithViewPager(viewPager);
     }
 
@@ -80,6 +81,7 @@ public abstract class BaseSearchTabbedActivity extends AppCompatActivity
 
         // Bind the adapter to the tabs
         viewPager.setAdapter(adapter);
+        tabLayout.removeAllTabs();
         tabLayout.setupWithViewPager(viewPager);
 
         PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
@@ -266,8 +268,9 @@ public abstract class BaseSearchTabbedActivity extends AppCompatActivity
 
         addFragments(set);
 
-        viewPager.setAdapter(adapter);
-        tabLayout.setupWithViewPager(viewPager);
+        //        viewPager.setAdapter(adapter);
+        //        tabLayout.removeAllTabs();
+        //        tabLayout.setupWithViewPager(viewPager);
 
         //        adapter.notifyDataSetChanged();
 
@@ -290,6 +293,10 @@ public abstract class BaseSearchTabbedActivity extends AppCompatActivity
             clearAllTabs();
 
             addTabs(displayedTabs);
+
+            tabLayout.removeAllTabs();
+            tabLayout.setupWithViewPager(viewPager);
+
             viewPager.setCurrentItem(previousTabPosition, true);
 
             return true;
@@ -302,6 +309,10 @@ public abstract class BaseSearchTabbedActivity extends AppCompatActivity
             previousTabPosition = viewPager.getCurrentItem();
 
             addTabs(API.SEARCH_GROUP);
+
+            tabLayout.removeAllTabs();
+            tabLayout.setupWithViewPager(viewPager);
+
             viewPager.setCurrentItem(adapter.getCount() - 1, true);
 
             return true;
@@ -328,7 +339,10 @@ public abstract class BaseSearchTabbedActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
 
-        item.setChecked(true);
+        //        if (previousMenuItem != null) previousMenuItem.setChecked(false);
+        //
+        //        previousMenuItem = item;
+        //        item.setChecked(true);
 
         switch (item.getItemId()) {
 

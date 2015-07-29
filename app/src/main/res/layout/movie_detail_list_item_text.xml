@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/movie_detail_list_item"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:minHeight="72dp"
+    >
+
+    <ImageView
+        android:id="@+id/movie_detail_main_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="24dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="72dp"
+        android:layout_marginStart="72dp"
+
+        android:layout_marginRight="72dp"
+        android:layout_marginEnd="72dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+
+        <TextView
+            android:id="@+id/movie_detail_primary_view"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:paddingTop="4dp">
+
+
+            <TextView
+                android:id="@+id/movie_detail_secondary_text"
+                android:layout_width="wrap_content"
+                android:layout_height="16dp"
+                android:text="Item Type"/>
+
+
+            <TextView
+                android:id="@+id/movie_detail_secondary_divider"
+                android:layout_width="wrap_content"
+                android:layout_height="16dp"
+                android:textStyle="bold"
+                android:text="  ·  "/>
+
+            <TextView
+                android:id="@+id/movie_detail_secondary_extra"
+                android:layout_width="wrap_content"
+                android:layout_height="16dp"
+                android:text="Extra"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/movie_detail_action_icon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:padding="8dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"/>
+
+</RelativeLayout>
