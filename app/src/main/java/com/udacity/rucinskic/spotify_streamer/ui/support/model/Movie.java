@@ -1,12 +1,14 @@
 package com.udacity.rucinskic.spotify_streamer.ui.support.model;
 
 import android.net.Uri;
+import android.util.SparseArray;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Movie {
 
+    private final int ID;
     private String name;
     private Uri imageUri;
     private Uri imageUriLarge;
@@ -18,17 +20,21 @@ public class Movie {
     private List<Video> videos;
     private List<Review> reviews;
 
-    public Movie(final String name, final Uri imageUri) {
+    private static SparseArray<Movie> movies = new SparseArray<>();
 
+    public Movie(final String name, final Uri imageUri, int ID) {
+
+        this.ID = ID;
         this.name = name;
         this.imageUri = imageUri;
 
-        // Default values
         this.imageUriLarge = imageUri;
         this.overview = "";
 
         this.videos = new ArrayList<>();
         this.reviews = new ArrayList<>();
+
+        movies.put(ID, this);
 
     }
 
@@ -41,6 +47,12 @@ public class Movie {
     public void addVideo(String name, String type, Uri url) {
 
         videos.add(new Video(name, type, url));
+
+    }
+
+    public static Movie getMovie(int ID) {
+
+        return movies.get(ID);
 
     }
 
@@ -75,12 +87,13 @@ public class Movie {
         try {
 
             int year = Integer.parseInt(date.substring(0, 4));
-            int month = Integer.parseInt(date.substring(5, 6));
+            int month = Integer.parseInt(date.substring(5, 7));
 
-            releaseDate = new ReleaseDate(year, month);
+            this.releaseDate = new ReleaseDate(year, month);
 
         } catch (Exception ignore) {}
 
     }
 
+    public int getID() { return ID; }
 }

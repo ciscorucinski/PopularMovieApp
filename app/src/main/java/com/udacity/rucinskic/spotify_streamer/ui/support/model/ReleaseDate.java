@@ -26,12 +26,12 @@ public class ReleaseDate extends SimpleDateFormat {
         this.yearFormatter = new SimpleDateFormat("yyyy");
         this.monthFormatter = new SimpleDateFormat("MMMM");
 
-        this.hasReleaseDate = false;
-        this.hasReleaseMonth = false;
+        calculateYear();
+        calculateMonth();
 
     }
 
-    public boolean hasReleaseDate() {
+    private void calculateYear() {
 
         try {
 
@@ -41,11 +41,9 @@ public class ReleaseDate extends SimpleDateFormat {
         } catch (Exception ignored) {
         }
 
-        return hasReleaseDate;
-
     }
 
-    public boolean hasReleaseMonth() {
+    private void calculateMonth() {
 
         try {
 
@@ -55,12 +53,14 @@ public class ReleaseDate extends SimpleDateFormat {
         } catch (Exception ignored) {
         }
 
-        return hasReleaseMonth;
-
     }
 
-    public String getYear() { return yearFormatter.format(releaseDate); }
+    public boolean hasReleaseDate() { return hasReleaseDate; }
 
-    public String getMonth() { return String.valueOf(this.month); }
+    public boolean hasReleaseMonth() { return hasReleaseMonth; }
+
+    public String getYear() { return this.year; }
+
+    public String getMonth() { return this.month; }
 
 }

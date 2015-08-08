@@ -22,6 +22,7 @@ public class JsonHandlerCallback implements Handler.Callback {
     public boolean handleMessage(final Message msg) {
 
         // These are the names of the JSON objects that need to be extracted.
+        final String ID_STRING = "id";
         final String RESULTS = "results";
         final String TITLE = "title";
         final String POSTER = "poster_path";
@@ -41,6 +42,7 @@ public class JsonHandlerCallback implements Handler.Callback {
 
                 JSONObject movieJson = movieArray.getJSONObject(i);
 
+                int ID = movieJson.getInt(ID_STRING);
                 String releaseDate = movieJson.getString(RELEASE);
                 String title = movieJson.getString(TITLE);
                 double voteAverage = movieJson.getDouble(VOTE);
@@ -48,7 +50,6 @@ public class JsonHandlerCallback implements Handler.Callback {
                 String overview = movieJson.getString(OVERVIEW);
                 String filePath = movieJson.getString(POSTER);
 
-                // TODO test which ones provide best experience on phone and tablet
                 // Change filepath to URL
                 String BASE_URL = "http://image.tmdb.org/t/p/";
                 String SIZE = "w92";
@@ -73,7 +74,7 @@ public class JsonHandlerCallback implements Handler.Callback {
                         .appendEncodedPath(filePath)
                         .build();
 
-                movie = new Movie(title, uri);
+                movie = new Movie(title, uri, ID);
 
                 movie.setOverview(overview);
                 movie.setRating(new Rating(voteAverage, voteCount));

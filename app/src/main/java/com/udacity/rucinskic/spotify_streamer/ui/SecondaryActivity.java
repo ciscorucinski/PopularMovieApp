@@ -1,6 +1,5 @@
 package com.udacity.rucinskic.spotify_streamer.ui;
 
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
@@ -8,13 +7,10 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
-import android.widget.RatingBar;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.udacity.rucinskic.spotify_streamer.App;
 import com.udacity.rucinskic.spotify_streamer.R;
-import com.udacity.rucinskic.spotify_streamer.enums.API;
-import com.udacity.rucinskic.spotify_streamer.interfaces.Downloadable;
 import com.udacity.rucinskic.spotify_streamer.ui.support.model.Movie;
 
 public class SecondaryActivity extends AppCompatActivity {
@@ -23,35 +19,20 @@ public class SecondaryActivity extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_secondary);    // TODO fix the landscape layout file in part 2. No need for CollapsingToolbarLayout and related items as I don't use them in landscape
-                                                        // TODO Use a recyclerView instead.
+        setContentView(R.layout.activity_secondary);
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.anim_toolbar);
         final CollapsingToolbarLayout collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        final TextView releaseYear = (TextView) findViewById(R.id.movie_release_year);
-        final TextView overview = (TextView) findViewById(R.id.movie_overview);
-        final RatingBar rating = (RatingBar) findViewById(R.id.movie_rating);
         final ImageView headerImage = (ImageView) findViewById(R.id.header);
-
-        Movie movie;
-
-        Intent movieData = getIntent();
-
-        Downloadable<Movie> api = (API) movieData.getSerializableExtra("movie");    // TODO Move the movie data to the Application (App). OnClick in first activity can cause a network retrieval of extra movie data before second activities OnCreate is called.
-        int position = movieData.getIntExtra("position", -1);
-
-        if (position == -1) startActivity(new Intent(this, MainActivity.class));
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        movie = api.getDownloadables().get(position);
+        MovieOverviewFragment.newInstance();
+        Movie movie = Movie.getMovie(App.getMovieID());
 
         collapsingToolbar.setTitle(movie.getName());
         toolbar.setTitle(movie.getName());
-        releaseYear.setText(movie.getReleaseDate().getYear());
-        overview.setText(movie.getOverview());
-        rating.setRating(movie.getRating().getFloatValue() / 2);
 
         Uri uri;
         int width;

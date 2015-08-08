@@ -2,11 +2,11 @@ package com.udacity.rucinskic.spotify_streamer.enums;
 
 import android.view.View;
 
-import com.udacity.rucinskic.spotify_streamer.ui.custom.Adapter.BaseViewHolder;
-import com.udacity.rucinskic.spotify_streamer.ui.custom.Adapter.MultiLineViewHolder;
-import com.udacity.rucinskic.spotify_streamer.ui.custom.Adapter.RatingViewHolder;
-import com.udacity.rucinskic.spotify_streamer.ui.custom.Adapter.SingleLineViewHolder;
-import com.udacity.rucinskic.spotify_streamer.ui.custom.Adapter.VideoViewHolder;
+import com.udacity.rucinskic.spotify_streamer.ui.custom.adapter.holder.BaseViewHolder;
+import com.udacity.rucinskic.spotify_streamer.ui.custom.adapter.holder.MultiLineViewHolder;
+import com.udacity.rucinskic.spotify_streamer.ui.custom.adapter.holder.RatingViewHolder;
+import com.udacity.rucinskic.spotify_streamer.ui.custom.adapter.holder.SingleLineViewHolder;
+import com.udacity.rucinskic.spotify_streamer.ui.custom.adapter.holder.VideoViewHolder;
 
 public enum PrimaryView {
 
@@ -55,7 +55,6 @@ public enum PrimaryView {
         public BaseViewHolder getViewHolder(View v, boolean isHeader) {
 
             return new SingleLineViewHolder(v, isHeader);
-
         }
 
     };

@@ -56,21 +56,13 @@
             android:orientation="vertical"
             android:layout_weight="1.618">
 
-            <android.support.v4.widget.NestedScrollView
-                android:id="@+id/nestedScrollView"
+            <fragment
+                android:id="@+id/movie_detail"
+                android:name="com.udacity.rucinskic.spotify_streamer.ui.MovieOverviewFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_gravity="fill_vertical"
-                android:paddingBottom="@dimen/widget_margin">
-
-                <fragment
-                    android:id="@+id/movie_detail"
-                    android:name="com.udacity.rucinskic.spotify_streamer.ui.MovieOverviewFragment"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    tools:layout="@layout/fragment_movie_detail_old"/>
-
-            </android.support.v4.widget.NestedScrollView>
+                tools:layout="@layout/fragment_movie_detail"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
         </LinearLayout>
 

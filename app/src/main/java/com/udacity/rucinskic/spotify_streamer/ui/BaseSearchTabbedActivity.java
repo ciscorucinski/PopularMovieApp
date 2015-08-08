@@ -291,7 +291,6 @@ public abstract class BaseSearchTabbedActivity extends AppCompatActivity
         public boolean onMenuItemActionCollapse(final MenuItem item) {
 
             clearAllTabs();
-
             addTabs(displayedTabs);
 
             tabLayout.removeAllTabs();

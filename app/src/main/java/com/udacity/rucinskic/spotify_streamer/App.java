@@ -7,7 +7,8 @@ import com.udacity.rucinskic.spotify_streamer.ui.MovieListFragment;
 
 public class App extends Application {
 
-    private static MovieListFragment fragment;
+    private static MovieListFragment searchFragment;
+    private static int movieID;
 
     private static final String API_KEY = "49bbbeee4fa205e483b690e221eee29d";
 
@@ -19,23 +20,28 @@ public class App extends Application {
     public static int getMovieCollectionLimit() { return MOVIE_COLLECTION_LIMIT; }
     public static int getNumberOfApiCalls() { return NUMBER_WEB_API_CALLS; }
 
-    public static MovieListFragment getSearchFragment() { return fragment; }
+    public static MovieListFragment getSearchFragment() { return searchFragment; }
     public static void setSearchFragment(final MovieListFragment fragment) {
 
         if (fragment == null) return;
         if (searchFragmentExists()) return;
 
-        App.fragment = fragment;
+        App.searchFragment = fragment;
 
     }
 
-    private static boolean searchFragmentExists() { return App.fragment != null; }
+    private static boolean searchFragmentExists() { return App.searchFragment != null; }
 
-    public static void notifySearchFragmentAdapter() { fragment.getAdapter().notifyDataSetChanged(); }
+    public static void notifySearchFragmentAdapter() {
 
-    public static void clearData() {
-
-        API.SEARCH.clearDownloadables();
+        searchFragment.getAdapter().notifyDataSetChanged();
 
     }
+
+    public static void clearData() { API.SEARCH.clearDownloadables(); }
+
+    public static void saveMovieID(int ID) { movieID = ID; }
+
+    public static int getMovieID() { return movieID; }
+
 }

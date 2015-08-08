@@ -94,7 +94,6 @@
         assert api != null;
         if (api.isFrom(API.WEB_GROUP)) {
 
-            //            adapter.clear();
             AsyncTask<String, Void, Void> getMovies = getAsyncTask(api);
             getMovies.execute();
 
@@ -121,10 +120,10 @@
 
         Intent activity = new Intent(this.getActivity(), SecondaryActivity.class);
 
-        activity.putExtra("movie", api);
-        activity.putExtra("position", position);
+        int ID = api.getDownloadables().get(position).getID();
+        App.saveMovieID(ID);
 
-        startActivity(activity); // TODO pass data to second activity
+        startActivity(activity);
 
     }
 

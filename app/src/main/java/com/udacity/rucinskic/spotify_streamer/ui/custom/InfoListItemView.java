@@ -33,7 +33,7 @@ public class InfoListItemView extends FrameLayout {
 
     }
 
-    private static final int INVALID_RESOURCE = 0;
+    private static final int INVALID_RESOURCE = -1;
 
     private boolean hasStringExtra;
 
@@ -41,8 +41,6 @@ public class InfoListItemView extends FrameLayout {
     private boolean hasSecondaryIcon;
 
     private int primaryViewType;
-
-    //    private InfoListItemView root;
 
     public ViewGroup root;
     public ImageView imgMainIcon;
@@ -65,7 +63,7 @@ public class InfoListItemView extends FrameLayout {
         int mainIcon = a.getResourceId(R.styleable.InfoListItemView_mainIcon, INVALID_RESOURCE);
         int actionIcon = a.getResourceId(R.styleable.InfoListItemView_actionIcon, INVALID_RESOURCE);
         int primaryLayout =
-                a.getResourceId(R.styleable.InfoListItemView_primaryLayout, R.layout.space);
+                a.getResourceId(R.styleable.InfoListItemView_primaryLayout, R.layout.stub);
         String secondaryText = a.getString(R.styleable.InfoListItemView_secondaryText);
         String extraText = a.getString(R.styleable.InfoListItemView_secondaryExtraText);
 
@@ -75,16 +73,13 @@ public class InfoListItemView extends FrameLayout {
 
         a.recycle();
 
-        //        root = (InfoListItemView) LayoutInflater.from(context)
-        //                .inflate(R.layout.movie_detail_list_item_text, this, true);
-
         root = (ViewGroup) LayoutInflater.from(context)
-                .inflate(R.layout.movie_detail_list_item, this, true);
+                .inflate(R.layout.movie_detail_list_item_stub, this, true);
 
         imgMainIcon = (ImageView) root.findViewById(R.id.movie_detail_main_icon);
         imgSecondaryIcon = (ImageView) root.findViewById(R.id.movie_detail_action_icon);
-        viewPrimaryStub = (ViewStub) root.findViewById(R.id.movie_detail_primary_view);
-        txtSecondary = (TextView) root.findViewById(R.id.movie_detail);
+        viewPrimaryStub = (ViewStub) root.findViewById(R.id.movie_detail_primary_view_stub);
+        txtSecondary = (TextView) root.findViewById(R.id.movie_detail_secondary_text);
         txtSecondaryDivider = (TextView) root.findViewById(R.id.movie_detail_secondary_divider);
         txtSecondaryExtra = (TextView) root.findViewById(R.id.movie_detail_secondary_extra);
 
@@ -110,16 +105,6 @@ public class InfoListItemView extends FrameLayout {
 
         }
 
-
-        // default view is just an empty space, so no need for a guard clause
-        if (primaryViewType != PrimaryViewType.STUB.ID) { // TODO this needs to be more detailed
-
-            viewPrimaryStub.setLayoutResource(primaryLayout);
-            viewPrimary =
-                    viewPrimaryStub.inflate(); // No longer have access to the Stub after inflate
-
-        }
-
     }
 
     public void setMainIcon(@DrawableRes int icon) { this.imgMainIcon.setImageResource(icon);}
@@ -136,7 +121,24 @@ public class InfoListItemView extends FrameLayout {
 
     public void setSecondaryExtraText(@StringRes int text) { this.txtSecondaryExtra.setText(text); }
 
-    public void setHasStringExtra(boolean hasStringExtra) { this.hasStringExtra = hasStringExtra; }
+    public void setHasStringExtra(boolean hasStringExtra) {
+
+        this.hasStringExtra = hasStringExtra;
+
+        if (hasStringExtra) {
+
+            txtSecondaryDivider.setVisibility(VISIBLE);
+            txtSecondaryExtra.setVisibility(VISIBLE);
+
+        } else {
+
+            txtSecondaryDivider.setVisibility(GONE);
+            txtSecondaryExtra.setVisibility(GONE);
+            txtSecondaryExtra.setText("");
+
+        }
+
+    }
 
     public void setPrimaryView(@LayoutRes int layout) { // TODO check this
 
@@ -150,31 +152,26 @@ public class InfoListItemView extends FrameLayout {
         this.root.setOnClickListener(listener);
 
     }
-
     public void setSecondaryActionOnClickListener(OnClickListener listener) {
 
         this.imgSecondaryIcon.setOnClickListener(listener);
 
     }
-
     public void setMainActionOnLongClickListener(OnLongClickListener listener) {
 
         this.root.setOnLongClickListener(listener);
 
     }
-
     public void setSecondaryActionOnLongClickListener(OnLongClickListener listener) {
 
         this.imgSecondaryIcon.setOnLongClickListener(listener);
 
     }
-
     public void setPrimaryViewOnClickListener(OnClickListener listener) {
 
         this.viewPrimary.setOnClickListener(listener);
 
     }
-
     public void setPrimaryViewOnLongClickListener(OnLongClickListener listener) {
 
         this.viewPrimary.setOnLongClickListener(listener);
@@ -182,11 +179,9 @@ public class InfoListItemView extends FrameLayout {
     }
 
     public ImageView getMainIconView() { return this.imgMainIcon; }
-
     public ImageView getActionIconView() { return this.imgSecondaryIcon; }
 
     public TextView getSecondaryTextView() { return this.txtSecondary; }
-
     public TextView getExtraTextView() { return this.txtSecondaryExtra; }
 
 }

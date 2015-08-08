@@ -3,8 +3,10 @@
        android:layout_width="match_parent"
        android:layout_height="match_parent">
 
-    <Space
+    <ViewStub
+        android:id="@+id/movie_detail_primary_view_stub"
+        android:layout_height="20dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:inflatedId="@+id/movie_detail_primary_view_inflated"/>
 
 </merge>
