@@ -8,92 +8,98 @@ import java.util.List;
 
 public class Movie {
 
-    private final int ID;
-    private String name;
-    private Uri imageUri;
-    private Uri imageUriLarge;
+	private static final SparseArray<Movie> movies = new SparseArray<>();
+	private final int ID;
+	private final Uri imageUri;
+	private final List<Video> videos;
+	private final List<Review> reviews;
+	private String name;
+	private Uri imageUriLarge;
+	private ReleaseDate releaseDate;
+	private Rating rating;
+	private String overview;
 
-    private ReleaseDate releaseDate;
-    private Rating rating;
-    private String overview;
+	public Movie(final String name, final Uri imageUri, int ID) {
 
-    private List<Video> videos;
-    private List<Review> reviews;
+		this.ID = ID;
+		this.name = name;
+		this.imageUri = imageUri;
 
-    private static SparseArray<Movie> movies = new SparseArray<>();
+		this.imageUriLarge = imageUri;
+		this.overview = "";
 
-    public Movie(final String name, final Uri imageUri, int ID) {
+		this.videos = new ArrayList<>();
+		this.reviews = new ArrayList<>();
 
-        this.ID = ID;
-        this.name = name;
-        this.imageUri = imageUri;
+		movies.put(ID, this);
 
-        this.imageUriLarge = imageUri;
-        this.overview = "";
+	}
 
-        this.videos = new ArrayList<>();
-        this.reviews = new ArrayList<>();
+	public static Movie getMovie(int ID) {
 
-        movies.put(ID, this);
+		return movies.get(ID);
 
-    }
+	}
 
-    public void addReview(String author, String content, Uri url) {
+	public void addReview(String author, String content, Uri url) {
 
-        reviews.add(new Review(author, content, url));
+		reviews.add(new Review(author, content, url));
 
-    }
+	}
 
-    public void addVideo(String name, String type, Uri url) {
+	public void addVideo(String name, String type, int size, Uri url) {
 
-        videos.add(new Video(name, type, url));
+		videos.add(new Video(name, type, size, url));
 
-    }
+	}
 
-    public static Movie getMovie(int ID) {
+	public List<Video> getVideos() { return this.videos; }
 
-        return movies.get(ID);
+	public List<Review> getReviews() { return this.reviews; }
 
-    }
+	public CharSequence getName() { return this.name; }
 
-    public List<Video> getVideos() { return this.videos; }
+	public void setName(final String name) { this.name = name; }
 
-    public List<Review> getReviews() { return this.reviews; }
+	public Uri getImageUri() { return this.imageUri; }
 
-    public CharSequence getName() { return this.name; }
-    public Uri getImageUri() { return this.imageUri; }
-    public Uri getImageUriLarge() { return this.imageUriLarge; }
+	public Uri getImageUriLarge() { return this.imageUriLarge; }
 
-    public ReleaseDate getReleaseDate() { return this.releaseDate; }
+	public void setImageUriLarge(final Uri imageUri) { this.imageUriLarge = imageUri; }
 
-    public Rating getRating() { return this.rating; }
-    public CharSequence getOverview() { return this.overview; }
+	public ReleaseDate getReleaseDate() { return this.releaseDate; }
 
-    public void setName(final String name) { this.name = name; }
-    public void setImageUriLarge(final Uri imageUri) { this.imageUriLarge = imageUri; }
+	public Rating getRating() { return this.rating; }
 
-    public void setRating(final Rating rating) { this.rating = rating; }
-    public void setOverview(final String overview) {
+	public void setRating(final Rating rating) { this.rating = rating; }
 
-        if (overview.equals("null")) return;
+	public CharSequence getOverview() { return this.overview; }
 
-        this.overview = overview;
+	public void setOverview(final String overview) {
 
-    }
-    public void setDateRelease(final String date) {
+		if (overview.equals("null")) return;
 
-        if (date.equals("null")) { return; }
+		this.overview = overview;
 
-        try {
+	}
 
-            int year = Integer.parseInt(date.substring(0, 4));
-            int month = Integer.parseInt(date.substring(5, 7));
+	public void setDateRelease(final String date) {
 
-            this.releaseDate = new ReleaseDate(year, month);
+		if (date.equals("null")) {
+			return;
+		}
 
-        } catch (Exception ignore) {}
+		try {
 
-    }
+			int year = Integer.parseInt(date.substring(0, 4));
+			int month = Integer.parseInt(date.substring(5, 7));
 
-    public int getID() { return ID; }
+			this.releaseDate = new ReleaseDate(year, month);
+
+		} catch (Exception ignore) {
+		}
+
+	}
+
+	public int getID() { return ID; }
 }

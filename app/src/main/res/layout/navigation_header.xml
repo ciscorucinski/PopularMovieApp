@@ -15,7 +15,8 @@
         android:gravity="center_vertical"
         android:layout_gravity="bottom"
         android:paddingLeft="16dp"
-        android:text="Movie App"
+        android:paddingRight="16dp"
+        android:text="@string/navigation_header"
         android:textSize="24sp"
         android:textColor="@color/primary_text_light"/>
 

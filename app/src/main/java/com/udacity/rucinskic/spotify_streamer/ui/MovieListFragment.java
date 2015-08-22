@@ -1,193 +1,203 @@
-    package com.udacity.rucinskic.spotify_streamer.ui;
+package com.udacity.rucinskic.spotify_streamer.ui;
 
-    import android.content.Intent;
-    import android.os.AsyncTask;
-    import android.os.Bundle;
-    import android.os.Handler;
-    import android.support.annotation.NonNull;
-    import android.support.annotation.Nullable;
-    import android.support.v4.app.Fragment;
-    import android.support.v7.widget.GridLayoutManager;
-    import android.support.v7.widget.RecyclerView;
-    import android.view.LayoutInflater;
-    import android.view.View;
-    import android.view.ViewGroup;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
-    import com.udacity.rucinskic.spotify_streamer.App;
-    import com.udacity.rucinskic.spotify_streamer.R;
-    import com.udacity.rucinskic.spotify_streamer.enums.API;
-    import com.udacity.rucinskic.spotify_streamer.interfaces.Asyncronizable;
-    import com.udacity.rucinskic.spotify_streamer.interfaces.OnItemClickListener;
-    import com.udacity.rucinskic.spotify_streamer.ui.support.MovieListAdapter;
-    import com.udacity.rucinskic.spotify_streamer.ui.support.web.JsonHandlerCallback;
-    import com.udacity.rucinskic.spotify_streamer.ui.support.web.WebService;
+import com.udacity.rucinskic.spotify_streamer.App;
+import com.udacity.rucinskic.spotify_streamer.R;
+import com.udacity.rucinskic.spotify_streamer.enums.API;
+import com.udacity.rucinskic.spotify_streamer.interfaces.Asyncronizable;
+import com.udacity.rucinskic.spotify_streamer.interfaces.OnItemClickListener;
+import com.udacity.rucinskic.spotify_streamer.ui.support.MovieListAdapter;
+import com.udacity.rucinskic.spotify_streamer.ui.support.web.BasicMovieJsonHandlerCallback;
+import com.udacity.rucinskic.spotify_streamer.ui.support.web.WebService;
 
-    import org.json.JSONException;
+import org.json.JSONException;
 
 
-    public class MovieListFragment extends Fragment
-        implements OnItemClickListener, Asyncronizable<String, Void, Void> {
+public class MovieListFragment extends Fragment
+		implements OnItemClickListener, Asyncronizable<String, Void, Void> {
 
-    private MovieListAdapter adapter;
-    private API api;
+	private static final String API_STRING = "api";
+	private MovieListAdapter adapter;
+	private API api;
 
-    private static final String API_STRING = "api";
+	public MovieListFragment() {}
 
-    public MovieListFragment() {}
+	public static MovieListFragment newInstance(API api) {
 
-    public static MovieListFragment newInstance(API api) {
+		MovieListFragment existingSearchFragment;
+		existingSearchFragment = getSearchFragmentIfExists(api);
 
-        MovieListFragment existingSearchFragment;
+		if (existingSearchFragment != null) return existingSearchFragment;
 
-        existingSearchFragment = getSearchFragmentIfExists(api);
+		// Either the API isn't from the search_group, or it is from the search_group but doesn't exist
+		MovieListFragment newFragment = createNewFragment(api);
 
-        if (existingSearchFragment != null) return existingSearchFragment;
+		// If the API is from the search_group, but the fragment didn't exist, then make the fragment globally available
+		if (api.isFrom(API.SEARCH_GROUP)) {
+			App.setSearchFragment(newFragment);
+		}
 
-        // Either the API isn't from the search_group, or it is from the search_group but doesn't exist
-        MovieListFragment newFragment = createNewFragment(api);
+		return newFragment;
 
-        // If the API is from the search_group, but the fragment didn't exist, then make the fragment globally available
-        if (api.isFrom(API.SEARCH_GROUP)) { App.setSearchFragment(newFragment); }
+	}
 
-        return newFragment;
+	@Nullable
+	private static MovieListFragment getSearchFragmentIfExists(API api) {
 
-    }
+		if (api.isFrom(API.SEARCH_GROUP)) {
 
-    @Nullable
-    private static MovieListFragment getSearchFragmentIfExists(API api) {
+			MovieListFragment fragment = App.getSearchFragment();
 
-        if (api.isFrom(API.SEARCH_GROUP)) {
+			if (fragment != null) return fragment;
 
-            MovieListFragment fragment = App.getSearchFragment();
+		}
 
-            if (fragment != null) return fragment;
+		return null;
 
-        }
+	}
 
-        return null;
+	@NonNull
+	private static MovieListFragment createNewFragment(API api) {
 
-    }
+		MovieListFragment fragment = new MovieListFragment();
 
-    @NonNull
-    private static MovieListFragment createNewFragment(API api) {
+		Bundle args = new Bundle();
+		args.putSerializable(API_STRING, api);
+		fragment.setArguments(args);
 
-        MovieListFragment fragment = new MovieListFragment();
+		return fragment;
 
-        Bundle args = new Bundle();
-        args.putSerializable(API_STRING, api);
-        fragment.setArguments(args);
+	}
 
-        return fragment;
+	@Override
+	public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+	                         final Bundle savedInstanceState) {
 
-    }
+		final View rootView = inflater.inflate(R.layout.fragment_movies_list, container, false);
 
-    @Override
-    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
-                             final Bundle savedInstanceState) {
+		api = (API) getArguments().getSerializable(API_STRING);
 
-        final View rootView = inflater.inflate(R.layout.fragment_movies_list, container, false);
+		adapter = new MovieListAdapter(getActivity(), api, this);
 
-        api = (API) getArguments().getSerializable(API_STRING);
+		// if the instance state is null, then this is the first start up...so get the data
+		if (savedInstanceState == null && api.isFrom(API.WEB_GROUP)) {
 
-        adapter = new MovieListAdapter(getActivity(), api, this);
+			AsyncTask<String, Void, Void> getMovies = getAsyncTask(api);
+			getMovies.execute();
 
-        assert api != null;
-        if (api.isFrom(API.WEB_GROUP)) {
+		}
 
-            AsyncTask<String, Void, Void> getMovies = getAsyncTask(api);
-            getMovies.execute();
+		RecyclerView movieListView;
 
-        }
+		movieListView = (RecyclerView) rootView.findViewById(R.id.movie_list);
+		movieListView.setAdapter(adapter);
+		movieListView.setItemViewCacheSize(App.getMovieCollectionLimit());
+		movieListView.setLayoutManager(
+				new GridLayoutManager(
+						// Changes number of columns based on form-factor and orientation
+						getActivity(),
+						getResources().getInteger(R.integer.columns)));
+		movieListView.setItemAnimator(new DefaultItemAnimator());
+		movieListView.setClickable(true);
+		movieListView.setHasFixedSize(true);
 
-        RecyclerView movieListView;
+		return rootView;
 
-        movieListView = (RecyclerView) rootView.findViewById(R.id.movie_list);
-        movieListView.setAdapter(adapter);
-        movieListView.setItemViewCacheSize(App.getMovieCollectionLimit());
-        movieListView.setLayoutManager(
-                new GridLayoutManager(  // Changes number of columns based on form-factor and orientation
-                        getActivity(),
-                        getResources().getInteger(R.integer.columns)));
+	}
 
-        return rootView;
+	@Override
+	public AsyncTask<String, Void, Void> getAsyncTask(final API api) {
 
-    }
+		if (api.isFrom(API.SEARCH_GROUP)) return new GetMoviesSearchAsync();
+		if (api.isFrom(API.WEB_GROUP)) return new GetMoviesAsync();
 
-    public MovieListAdapter getAdapter() { return this.adapter; }
+		return null;
 
-    @Override
-    public void onClick(final View v, final int position) {
+	}
 
-        Intent activity = new Intent(this.getActivity(), SecondaryActivity.class);
+	public MovieListAdapter getAdapter() { return this.adapter; }
 
-        int ID = api.getDownloadables().get(position).getID();
-        App.saveMovieID(ID);
+	@Override
+	public void onClick(final View v, final int position) {
 
-        startActivity(activity);
+		Intent activity = new Intent(this.getActivity(), SecondaryActivity.class);
 
-    }
+		int ID = api.getDownloadables().get(position).getID();
+		App.saveMovieID(ID);
 
-    @Override
-    public AsyncTask<String, Void, Void> getAsyncTask(final API api) {
+		startActivity(activity);
 
-        if (api.isFrom(API.SEARCH_GROUP)) return new GetMoviesSearchAsync();
-        if (api.isFrom(API.WEB_GROUP)) return new GetMoviesAsync();
+	}
 
-        return null;
+	private class GetMoviesAsync extends AsyncTask<String, Void, Void> {
 
-    }
+		private final Handler.Callback getMoviesFromJSON =
+				new BasicMovieJsonHandlerCallback(getActivity(), api);
 
-    private class GetMoviesAsync extends AsyncTask<String, Void, Void> {
+		@Override
+		protected Void doInBackground(final String... params) {
 
-        private final Handler.Callback getMoviesFromJSON = new JsonHandlerCallback(api);
+			try {
 
-        @Override
-        protected Void doInBackground(final String... params) {
+				new WebService(api.getUri()).acquireData(getMoviesFromJSON);
 
-            try {
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
 
-                // This will get the JSON from the webservice, and will use the CallBack to assign the List of movies.
-                new WebService(api.getUri()).acquireDataWithCallback(getMoviesFromJSON);
+			return null;
+		}
 
-            } catch (JSONException e) { e.printStackTrace(); }
+		@Override
+		protected void onPostExecute(final Void aVoid) {
 
-            return null;
-        }
+			adapter.notifyDataSetChanged(); // This needs to occur on the main thread
 
-        @Override
-        protected void onPostExecute(final Void aVoid) {
+		}
 
-            adapter.notifyDataSetChanged(); // This needs to occur on the main thread
+	}
 
-        }
+	private class GetMoviesSearchAsync extends AsyncTask<String, Void, Void> {
 
-    }
+		private final Handler.Callback getMoviesFromJSON =
+				new BasicMovieJsonHandlerCallback(getActivity(), api);
 
-    private class GetMoviesSearchAsync extends AsyncTask<String, Void, Void> {
+		@Override
+		protected Void doInBackground(final String... params) {
 
-        private final Handler.Callback getMoviesFromJSON = new JsonHandlerCallback(api);
+			try {
 
-        @Override
-        protected Void doInBackground(final String... params) {
+				// This will get the JSON from the webservice, and will use the CallBack to assign the List of movies.
+				new WebService(api.getUri(params[0])).acquireData(getMoviesFromJSON);
 
-            try {
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
 
-                // This will get the JSON from the webservice, and will use the CallBack to assign the List of movies.
-                new WebService(api.getUri(params[0])).acquireDataWithCallback(getMoviesFromJSON);
+			return null;
+		}
 
-            } catch (JSONException e) { e.printStackTrace(); }
+		@Override
+		protected void onPostExecute(final Void aVoid) {
 
-            return null;
-        }
+			App.getSearchFragment().getAdapter().notifyDataSetChanged();
 
-        @Override
-        protected void onPostExecute(final Void aVoid) {
+		}
 
-            App.getSearchFragment().getAdapter().notifyDataSetChanged();
-
-        }
-
-    }
+	}
 
 }
 

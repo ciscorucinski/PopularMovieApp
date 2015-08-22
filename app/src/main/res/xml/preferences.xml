@@ -16,12 +16,13 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/pref_header_local">
+        android:title="@string/pref_header_local" android:enabled="false">
 
         <SwitchPreference
             android:key="@string/pref_local_is_cached_key"
             android:title="@string/pref_local_is_cached"
-            android:summary="@string/pref_local_is_cached_description"/>
+            android:summary="@string/pref_local_is_cached_description"
+            android:enabled="false"/>
 
     </PreferenceCategory>
 

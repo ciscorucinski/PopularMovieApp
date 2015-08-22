@@ -30,341 +30,323 @@ import com.udacity.rucinskic.spotify_streamer.ui.support.ViewPagerFragmentAdapte
 import java.util.EnumSet;
 
 public abstract class BaseSearchTabbedActivity extends AppCompatActivity
-        implements SearchView.OnQueryTextListener, NavigationView.OnNavigationItemSelectedListener,
-                   View.OnClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
+		implements SearchView.OnQueryTextListener, NavigationView.OnNavigationItemSelectedListener,
+		           View.OnClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
-    Search searchMethod;
+	private static final String IS_OPEN = "IS_DRAWER_OPEN";
+	private static final String QUERIED_TEXT = "queriedText";
+	private static final String SEARCH_METHOD = "searchMethod";
+	private static EnumSet<API> displayedTabs;
+	private Search searchMethod;
+	private DrawerLayout drawerLayout;
+	private SearchView searchView;
+	private ViewPagerFragmentAdapter adapter;
+	private ViewPager viewPager;
+	private TabLayout tabLayout;
+	private CharSequence savedInstanceStateSearchQuery = "";
+	private boolean isFromVoiceSearch;
 
-    public DrawerLayout drawerLayout;
+	void initializeToolbar() {
 
-    private SearchView searchView;
-    private ViewPagerFragmentAdapter adapter;
-    private ViewPager viewPager;
-    private TabLayout tabLayout;
+		// Initialize all components. Tabs, Pager, and Adapter
+		tabLayout = (TabLayout) findViewById(R.id.tabs);
+		viewPager = (ViewPager) findViewById(R.id.pager);
+		adapter = new ViewPagerFragmentAdapter(getSupportFragmentManager());
 
-    private CharSequence savedInstanceStateSearchQuery = "";
-    private boolean isFromVoiceSearch;
+		// Add the tabs
+		if (displayedTabs == null) displayedTabs = getDefaultTabs();
+		addFragments(displayedTabs);
 
-    private static final String QUERIED_TEXT = "queriedText";
-    private static final String SEARCH_METHOD = "searchMethod";
+		// Bind the adapter to the tabs
+		viewPager.setAdapter(adapter);
+		tabLayout.removeAllTabs();
+		tabLayout.setupWithViewPager(viewPager);
 
-    private static EnumSet<API> displayedTabs;
+		PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+				.registerOnSharedPreferenceChangeListener(this);
 
-    abstract EnumSet<API> getDefaultTabs();
+		// Initialize the Navigation View and select the first item
+		NavigationView navigationView = (NavigationView) findViewById(R.id.navigationView);
+		drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
 
-    public void setCurrentTabs(EnumSet<API> tabs) {
+		navigationView.setNavigationItemSelectedListener(this);
+		navigationView.getMenu().getItem(0).setChecked(true);
 
-        displayedTabs = tabs;
+		// Setup the toolbar
+		final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
-        clearAllTabs();
+		setSupportActionBar(toolbar);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		toolbar.setNavigationIcon(R.drawable.ic_menu_white_24dp);
+		toolbar.setNavigationOnClickListener(this);
+		navigationView.setNavigationItemSelectedListener(this);
 
-        addFragments(displayedTabs);
-        viewPager.setCurrentItem(0, true);
 
-        viewPager.setAdapter(adapter);
-        tabLayout.removeAllTabs();
-        tabLayout.setupWithViewPager(viewPager);
-    }
+	}
 
-    public void closeDrawer() { drawerLayout.closeDrawer(GravityCompat.START); }
+	abstract EnumSet<API> getDefaultTabs();
 
-    void initializeToolbar() {
+	private void addFragments(final Iterable<API> set) {
 
-        // Initialize all components. Tabs, Pager, and Adapter
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
-        viewPager = (ViewPager) findViewById(R.id.pager);
-        adapter = new ViewPagerFragmentAdapter(getSupportFragmentManager());
+		for (API tab : set) {
 
-        // Add the tabs
-        if (displayedTabs == null) displayedTabs = getDefaultTabs();
-        addFragments(displayedTabs);
+			adapter.addFragment(MovieListFragment.newInstance(tab), tab);
 
-        // Bind the adapter to the tabs
-        viewPager.setAdapter(adapter);
-        tabLayout.removeAllTabs();
-        tabLayout.setupWithViewPager(viewPager);
+		}
 
-        PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
-                .registerOnSharedPreferenceChangeListener(this);
+		adapter.notifyDataSetChanged();
 
-        // Initialize the Navigation View and select the first item
-        NavigationView navigationView = (NavigationView) findViewById(R.id.navigationView);
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+	}
 
-        navigationView.setNavigationItemSelectedListener(this);
-        navigationView.getMenu().getItem(0).setChecked(true);
+	@Override
+	public void onClick(View v) {
 
-        // Setup the toolbar
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+		drawerLayout.openDrawer(GravityCompat.START);
 
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationIcon(R.drawable.ic_menu_white_24dp);
-        toolbar.setNavigationOnClickListener(this);
-        navigationView.setNavigationItemSelectedListener(this);
+	}
 
+	@Override
+	public void onRestoreInstanceState(@NonNull final Bundle savedInstanceState) {
 
-    }
+		savedInstanceStateSearchQuery = savedInstanceState.getCharSequence(QUERIED_TEXT);
+		searchMethod = Search.valueOf(savedInstanceState.getString(SEARCH_METHOD));
 
-    @Override
-    public void onClick(View v) {
+		boolean isDrawerOpen = savedInstanceState.getBoolean(IS_OPEN);
 
-        drawerLayout.openDrawer(GravityCompat.START);
+		if (isDrawerOpen) drawerLayout.openDrawer(GravityCompat.START);
 
-    }
+		super.onSaveInstanceState(savedInstanceState);
 
-    private static void performSearch(final String search) {
+	}
 
-        App.clearData();
-        App.getSearchFragment()
-                .getAsyncTask(API.SEARCH)
-                .execute(search);
+	@Override
+	public boolean onCreateOptionsMenu(final Menu menu) {
 
-        App.notifySearchFragmentAdapter();
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.menu_main, menu);
 
-    }
+		final SearchManager manager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+		final MenuItem searchMenu = menu.findItem(R.id.search);
 
-    private void addFragments(final Iterable<API> set) {
+		searchView = (SearchView) MenuItemCompat.getActionView(searchMenu);
+		searchView.setSearchableInfo(manager.getSearchableInfo(getComponentName()));
+		searchView.setOnQueryTextListener(this);
 
-        for (API tab : set) {
+		MenuItemCompat.setOnActionExpandListener(searchMenu, new OnInitiateSearchListener());
 
-            adapter.addFragment(MovieListFragment.newInstance(tab), tab);
+		// Handle Rotation changes for search
 
-        }
+		if (wasScreenRotated()) {
 
-        adapter.notifyDataSetChanged();
+			searchMenu.expandActionView();
+			searchView.setQuery(savedInstanceStateSearchQuery, false);
+			savedInstanceStateSearchQuery = "";
 
-    }
+			App.notifySearchFragmentAdapter();
 
-    @Override
-    public void onRestoreInstanceState(@NonNull final Bundle savedInstanceState) {
+		}
 
-        savedInstanceStateSearchQuery = savedInstanceState.getCharSequence(QUERIED_TEXT);
-        searchMethod = Search.valueOf(savedInstanceState.getString(SEARCH_METHOD));
+		return true;
 
-        //        displayedTabs = (EnumSet<API>)savedInstanceState.getSerializable(DISPLAYED_TABS);
+	}	private static void performSearch(final String search) {
 
-        super.onSaveInstanceState(savedInstanceState);
+		App.clearData();
+		App.getSearchFragment()
+				.getAsyncTask(API.SEARCH)
+				.execute(search);
 
-    }
+		App.notifySearchFragmentAdapter();
 
-    @Override
-    public void onSaveInstanceState(final Bundle savedInstanceState) {
+	}
 
-        if (searchMethod != null)
-        savedInstanceState.putString(SEARCH_METHOD, searchMethod.name());
+	private boolean wasScreenRotated() { return savedInstanceStateSearchQuery.length() > 0; }
 
-        if (searchView != null)
-            savedInstanceState.putCharSequence(QUERIED_TEXT, searchView.getQuery());
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
 
-        //        if (displayedTabs != null)
-        //            savedInstanceState.putSerializable(DISPLAYED_TABS, displayedTabs.toArray(API.values()));
+		super.onCreate(savedInstanceState);
 
-        super.onSaveInstanceState(savedInstanceState);
+		// This static call will reset default values only on the first ever read
+		PreferenceManager.setDefaultValues(getBaseContext(), R.xml.preferences, false);
 
-    }
+		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+		String enumString = pref.getString(
+				getString(R.string.pref_search_method_key),
+				Search.BUFFER.name());
 
-        super.onCreate(savedInstanceState);
+		searchMethod = Search.valueOf(enumString);
 
-        // This static call will reset default values only on the first ever read
-        PreferenceManager.setDefaultValues(getBaseContext(), R.xml.preferences, false);
+	}
 
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+	@Override
+	protected void onNewIntent(final Intent intent) {
 
-        String enumString = pref.getString(
-                getString(R.string.pref_search_method_key),
-                Search.BUFFER.name());
+		if (intent.getAction().equals(Intent.ACTION_SEARCH)) {
 
-        searchMethod = Search.valueOf(enumString);
+			final String query = intent.getStringExtra(SearchManager.QUERY);
 
-    }
+			isFromVoiceSearch = true;
 
-    @Override
-    public boolean onCreateOptionsMenu(final Menu menu) {
+			// Emulates clicking Search button - onQueryTextChange(). No other action needed.
+			searchView.setQuery(query, false);
 
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+		}
 
-        final SearchManager manager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        final MenuItem searchMenu = menu.findItem(R.id.search);
+	}
 
-        searchView = (SearchView) MenuItemCompat.getActionView(searchMenu);
-        searchView.setSearchableInfo(manager.getSearchableInfo(getComponentName()));
-        searchView.setOnQueryTextListener(this);
+	@Override
+	public void onSaveInstanceState(final Bundle savedInstanceState) {
 
-        MenuItemCompat.setOnActionExpandListener(searchMenu, new OnInitiateSearchListener());
+		if (searchMethod != null)
+			savedInstanceState.putString(SEARCH_METHOD, searchMethod.name());
 
-        // Handle Rotation changes for search
+		if (searchView != null)
+			savedInstanceState.putCharSequence(QUERIED_TEXT, searchView.getQuery());
 
-        if (wasScreenRotated()) {
+		savedInstanceState.putBoolean(IS_OPEN, drawerLayout.isDrawerOpen(GravityCompat.START));
 
-            searchMenu.expandActionView();
-            searchView.setQuery(savedInstanceStateSearchQuery, false);
-            savedInstanceStateSearchQuery = "";
+		super.onSaveInstanceState(savedInstanceState);
 
-            App.notifySearchFragmentAdapter();
+	}
 
-        }
+	private void addTabs(final Iterable<API> set) { addFragments(set); }
 
-        return true;
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 
-    }
+		if (key.equals(getString(R.string.pref_search_method_key))) {
 
-    @Override
-    public boolean onQueryTextSubmit(final String query) {
+			String enumString = sharedPreferences.getString(
+					getString(R.string.pref_search_method_key),
+					Search.BUFFER.name());
 
-        performSearch(query);
-        return false;
+			searchMethod = Search.valueOf(enumString);
 
-    }
+		}
 
-    @Override
-    public boolean onQueryTextChange(final String newText) {
+	}	@Override
+	public boolean onQueryTextSubmit(final String query) {
 
-        if (wasScreenRotated()) return false;
-        if (isFromVoiceSearch) {
-            handleVoiceSearch(newText);
-        }
+		performSearch(query);
+		return false;
 
-        if (searchMethod.canSearch(newText)) {
+	}
 
-            performSearch(Search.getSearchableWord());
+	@Override
+	public boolean onNavigationItemSelected(MenuItem item) {
 
-        }
+		switch (item.getItemId()) {
 
-        return false;
+			case R.id.navigationSetting:
 
-    }
+				startActivity(new Intent(this, SettingsActivity.class));
+				break;
 
-    private boolean wasScreenRotated() { return savedInstanceStateSearchQuery.length() > 0; }
+			case R.id.navigationOnline:
+				setCurrentTabs(API.WEB_GROUP);
+				break;
+			case R.id.navigationMyCollection:
+				setCurrentTabs(API.OFFLINE_GROUP);
+				break;
 
-    private void handleVoiceSearch(final String word) {
+			default: // Do nothing
 
-        this.isFromVoiceSearch = false;
-        this.onQueryTextSubmit(word);
+		}
 
-    }
+		closeDrawer();
 
-    @Override
-    protected void onNewIntent(final Intent intent) {
+		return true;
 
-        if (intent.getAction().equals(Intent.ACTION_SEARCH)) {
+	}	@Override
+	public boolean onQueryTextChange(final String newText) {
 
-            final String query = intent.getStringExtra(SearchManager.QUERY);
+		if (wasScreenRotated()) return false;
+		if (isFromVoiceSearch) {
+			handleVoiceSearch(newText);
+		}
 
-            isFromVoiceSearch = true;
+		if (searchMethod.canSearch(newText)) {
 
-            // Emulates clicking Search button - onQueryTextChange(). No other action needed.
-            searchView.setQuery(query, false);
+			performSearch(Search.getSearchableWord());
 
-        }
+		}
 
-    }
+		return false;
 
-    private void addTabs(final Iterable<API> set) {
+	}
 
-        addFragments(set);
+	private void setCurrentTabs(EnumSet<API> tabs) {
 
-        //        viewPager.setAdapter(adapter);
-        //        tabLayout.removeAllTabs();
-        //        tabLayout.setupWithViewPager(viewPager);
+		displayedTabs = tabs;
 
-        //        adapter.notifyDataSetChanged();
+		clearAllTabs();
 
-    }
+		addFragments(displayedTabs);
+		viewPager.setCurrentItem(0, true);
 
-    private void clearAllTabs() {
+		viewPager.setAdapter(adapter);
+		tabLayout.removeAllTabs();
+		tabLayout.setupWithViewPager(viewPager);
+	}
 
-        adapter.clearTabs();
-        App.clearData();
+	private void closeDrawer() { drawerLayout.closeDrawer(GravityCompat.START); }	private void handleVoiceSearch(final String word) {
 
-    }
+		this.isFromVoiceSearch = false;
+		this.onQueryTextSubmit(word);
 
-    private class OnInitiateSearchListener implements MenuItemCompat.OnActionExpandListener {
+	}
 
-        int previousTabPosition;
+	private void clearAllTabs() {
 
-        @Override
-        public boolean onMenuItemActionCollapse(final MenuItem item) {
+		adapter.clearTabs();
+		App.clearData();
 
-            clearAllTabs();
-            addTabs(displayedTabs);
+	}
 
-            tabLayout.removeAllTabs();
-            tabLayout.setupWithViewPager(viewPager);
+	private class OnInitiateSearchListener implements MenuItemCompat.OnActionExpandListener {
 
-            viewPager.setCurrentItem(previousTabPosition, true);
+		int previousTabPosition;
 
-            return true;
+		@Override
+		public boolean onMenuItemActionExpand(final MenuItem item) {
 
-        }
+			previousTabPosition = viewPager.getCurrentItem();
 
-        @Override
-        public boolean onMenuItemActionExpand(final MenuItem item) {
+			addTabs(API.SEARCH_GROUP);
 
-            previousTabPosition = viewPager.getCurrentItem();
+			tabLayout.removeAllTabs();
+			tabLayout.setupWithViewPager(viewPager);
 
-            addTabs(API.SEARCH_GROUP);
+			viewPager.setCurrentItem(adapter.getCount() - 1, true);
 
-            tabLayout.removeAllTabs();
-            tabLayout.setupWithViewPager(viewPager);
+			return true;
 
-            viewPager.setCurrentItem(adapter.getCount() - 1, true);
+		}
 
-            return true;
+		@Override
+		public boolean onMenuItemActionCollapse(final MenuItem item) {
 
-        }
+			clearAllTabs();
+			addTabs(displayedTabs);
 
-    }
+			tabLayout.removeAllTabs();
+			tabLayout.setupWithViewPager(viewPager);
 
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+			viewPager.setCurrentItem(previousTabPosition, true);
 
-        if (key.equals(getString(R.string.pref_search_method_key))) {
+			return true;
 
-            String enumString = sharedPreferences.getString(
-                    getString(R.string.pref_search_method_key),
-                    Search.BUFFER.name());
+		}
 
-            searchMethod = Search.valueOf(enumString);
+	}
 
-        }
 
-    }
 
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
 
-        //        if (previousMenuItem != null) previousMenuItem.setChecked(false);
-        //
-        //        previousMenuItem = item;
-        //        item.setChecked(true);
 
-        switch (item.getItemId()) {
 
-            case R.id.navigationSetting:
 
-                startActivity(new Intent(this, SettingsActivity.class));
-                break;
 
-            case R.id.navigationOnline:
-                setCurrentTabs(API.WEB_GROUP);
-                break;
-            case R.id.navigationMyCollection:
-                setCurrentTabs(API.OFFLINE_GROUP);
-                break;
-
-            default: // Do nothing
-
-        }
-
-        closeDrawer();
-
-        return true;
-
-    }
 
 }

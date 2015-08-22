@@ -8,23 +8,23 @@ import com.udacity.rucinskic.spotify_streamer.R;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
 
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.settings);
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.settings);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+		setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		getSupportActionBar().setHomeButtonEnabled(true);
 
-        getFragmentManager().beginTransaction()
-                .replace(R.id.settings_content, new SettingsFragment())
-                .addToBackStack(null)
-                .commit();
+		getFragmentManager().beginTransaction()
+				.replace(R.id.settings_content, new SettingsFragment())
+				.addToBackStack(null)
+				.commit();
 
-    }
+	}
 
 }

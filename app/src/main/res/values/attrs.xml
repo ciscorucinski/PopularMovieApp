@@ -5,22 +5,11 @@
 
         <attr name="mainIcon" format="reference"/>
         <attr name="actionIcon" format="reference"/>
-        <attr name="primaryLayout" format="reference"/>
+        <!--<attr name="primaryLayout" format="reference"/>-->
         <attr name="hasStringExtra" format="boolean"/>
-        <attr name="isGroupHeader" format="boolean"/>
+        <!--<attr name="isGroupHeader" format="boolean"/>-->
         <attr name="secondaryText" format="string"/>
         <attr name="secondaryExtraText" format="string"/>
-
-        <attr name="primaryViewType" format="enum">
-
-            <enum name="Label" value="0"/>
-            <enum name="Image" value="1"/>
-            <enum name="Video" value="2"/>
-            <enum name="Rating" value="3"/>
-            <enum name="Progress" value="4"/>
-            <enum name="Stub" value="5"/>
-
-        </attr>
 
     </declare-styleable>
 

@@ -1,66 +1,59 @@
 package com.udacity.rucinskic.spotify_streamer.ui.support.model;
 
-import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
-/**
- * Created by Christopher on 7/27/2015.
- */
-public class ReleaseDate extends SimpleDateFormat {
+public class ReleaseDate {
 
-    SimpleDateFormat yearFormatter;
-    SimpleDateFormat monthFormatter;
+	private final GregorianCalendar releaseDate;
 
-    GregorianCalendar releaseDate;
+	private String year;
+	private String month;
 
-    String year;
-    String month;
+	private boolean hasReleaseDate;
+	private boolean hasReleaseMonth;
 
-    boolean hasReleaseDate;
-    boolean hasReleaseMonth;
+	public ReleaseDate(int year, int month) {
 
-    public ReleaseDate(int year, int month) {
+		this.releaseDate = new GregorianCalendar(year, month, 1);
 
-        this.releaseDate = new GregorianCalendar(year, month, 0);
+		calculateYear();
+		calculateMonth();
 
-        this.yearFormatter = new SimpleDateFormat("yyyy");
-        this.monthFormatter = new SimpleDateFormat("MMMM");
+	}
 
-        calculateYear();
-        calculateMonth();
+	private void calculateYear() {
 
-    }
+		try {
 
-    private void calculateYear() {
+			this.year = String.valueOf(releaseDate.get(Calendar.YEAR));
+			this.hasReleaseDate = true;
 
-        try {
+		} catch (Exception ignored) {
+		}
 
-            year = yearFormatter.format(releaseDate);
-            hasReleaseDate = true;
+	}
 
-        } catch (Exception ignored) {
-        }
+	private void calculateMonth() {
 
-    }
+		try {
 
-    private void calculateMonth() {
+			this.month =
+					releaseDate.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
+			this.hasReleaseMonth = true;
 
-        try {
+		} catch (Exception ignored) {
+		}
 
-            month = monthFormatter.format(releaseDate);
-            hasReleaseMonth = true;
+	}
 
-        } catch (Exception ignored) {
-        }
+	public boolean hasReleaseDate() { return hasReleaseDate; }
 
-    }
+	public boolean hasReleaseMonth() { return hasReleaseMonth; }
 
-    public boolean hasReleaseDate() { return hasReleaseDate; }
+	public String getYear() { return this.year; }
 
-    public boolean hasReleaseMonth() { return hasReleaseMonth; }
-
-    public String getYear() { return this.year; }
-
-    public String getMonth() { return this.month; }
+	public String getMonth() { return this.month; }
 
 }

@@ -1,45 +1,67 @@
 package com.udacity.rucinskic.spotify_streamer.enums;
 
+import android.support.annotation.DrawableRes;
+
+import com.udacity.rucinskic.spotify_streamer.R;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public enum ListGroup {
 
-    BASIC,
-    VIDEO,
-    REVIEW;
+	BASIC(R.drawable.ic_information_black_24dp),
+	VIDEO(R.drawable.ic_video_library_black_24dp),
+	REVIEW(R.drawable.ic_rate_review_black_24dp);
 
-    private final List<Boolean> isHeaderList;
+	private @DrawableRes final int icon;
 
-    ListGroup() { isHeaderList = new ArrayList<>(); }
+	private final List<Boolean> listHeaders;
+	private final List<PrimaryView> listViews;
+	private final List<Boolean> listIsAvailable;
 
-    public static boolean isHeader(int index) {
+	private int size;
 
-        // Index assumes a "flat map" of the Lists, so I have to convert it to represent a jagged list
-        for (ListGroup group : values()) {
 
-            int groupSize = group.isHeaderList.size();
+	ListGroup(@DrawableRes int icon) {
 
-            // if the index is larger than the current group, then go to the next group and modify the index correctly
-            if (index >= groupSize) {
+		this.icon = icon;
+		listHeaders = new ArrayList<>();
+		listViews = new ArrayList<>();
+		listIsAvailable = new ArrayList<>();
 
-                index -= groupSize;
-                continue;
+	}
 
-            }
+	public static void addViewToGroup(ListGroup group, PrimaryView view, boolean isAvailable) {
 
-            return group.isHeaderList.get(index);
+		// Create jagged Lists where the first item (the header) is true. False otherwise
+		// It is easier to determine headers here rather than while flattening
+		group.listHeaders.add(group.listHeaders.isEmpty());
+		group.listViews.add(view);
+		group.listIsAvailable.add(isAvailable);
+		group.size++;
 
-        }
+	}
 
-        return false; // Outside of bounds
+	public
+	@DrawableRes
+	int getIconResource() { return this.icon; }
 
-    }
+	public List<Boolean> getHeaderList() { return this.listHeaders; }
 
-    public static void addViewToGroup(ListGroup group) {
+	public List<PrimaryView> getViewTypeList() { return this.listViews; }
 
-        group.isHeaderList.add(group.isHeaderList.isEmpty());
+	public List<Boolean> getIsAvailableList() { return this.listIsAvailable; }
 
-    }
+	public void clearData() {
+
+		listHeaders.clear();
+		listViews.clear();
+		listIsAvailable.clear();
+		size = 0;
+
+	}
+
+	public int getSize() { return this.size; }
+
 
 }

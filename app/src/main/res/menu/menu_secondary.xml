@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group
+        android:id="@+id/navigationGroupSetting"
+        android:checkableBehavior="all">
+
+        <item
+            android:id="@+id/overflow_favorite"
+            android:title="@string/menu_secondary_favorite"/>
+        <item
+            android:id="@+id/overflow_want_to_watch"
+            android:title="@string/menu_secondary_will_watch"/>
+        <item
+            android:id="@+id/overflow_watched"
+            android:title="@string/menu_secondary_watched"/>
+
+    </group>
+
+</menu>

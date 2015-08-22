@@ -4,73 +4,64 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:minHeight="72dp">
+                android:minHeight="@dimen/list_item_height">
 
     <ImageView
         android:id="@+id/movie_detail_main_icon"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginLeft="24dp"
-        android:layout_marginRight="24dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="24dp"
+        android:layout_width="@dimen/icon_size_nonclickable"
+        android:layout_height="@dimen/icon_size_nonclickable"
+        android:layout_margin="@dimen/icon_margin_nonclickable"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"/>
+        android:layout_alignParentStart="true"
+        />
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="72dp"
-        android:layout_marginStart="72dp"
+        android:layout_marginLeft="@dimen/list_item_icon_space"
+        android:layout_marginStart="@dimen/list_item_icon_space"
+        android:layout_marginRight="@dimen/list_item_icon_space"
+        android:layout_marginEnd="@dimen/list_item_icon_space"
 
-        android:layout_marginRight="72dp"
-        android:layout_marginEnd="72dp"
-        android:paddingTop="16dp"
-        android:paddingBottom="16dp"
+        android:paddingTop="@dimen/list_item_padding"
+        android:paddingBottom="@dimen/list_item_padding"
 
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true">
+        <!--android:layout_toLeftOf="@+id/movie_detail_action_icon"-->
+        <!--android:layout_toStartOf="@+id/movie_detail_action_icon">-->
 
-        <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--style="@style/TextAppearance.AppCompat.Medium"-->
-        <!--android:text="2015"/>-->
         <ViewStub
             android:id="@+id/movie_detail_primary_view_stub"
-            android:layout_height="20dp"
-            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
             android:layout="@layout/inflated"
             android:inflatedId="@+id/movie_detail_primary_view_inflated"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="24dp"
-            android:paddingTop="4dp">
+            android:layout_height="@dimen/list_item_height_secondary_layout"
+            android:paddingTop="@dimen/list_item_padding_between_primary_secondary">
 
 
             <TextView
                 android:id="@+id/movie_detail_secondary_text"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/TextAppearance.AppCompat.Small"
-                android:textColor="@color/secondary_text"
-                android:text="Item Type"/>
-
+                android:layout_height="@dimen/list_item_height_secondary_view"
+                style="@style/TextAppearance.AppCompat.Small"/>
 
             <TextView
                 android:id="@+id/movie_detail_secondary_divider"
                 android:layout_width="wrap_content"
-                android:layout_height="16dp"
+                android:layout_height="@dimen/list_item_height_secondary_view"
                 android:textStyle="bold"
                 android:text="  ·  "/>
 
             <TextView
                 android:id="@+id/movie_detail_secondary_extra"
                 android:layout_width="wrap_content"
-                android:layout_height="16dp"
-                android:text="Extra"/>
+                android:layout_height="@dimen/list_item_height_secondary_view"/>
 
         </LinearLayout>
 
@@ -78,14 +69,15 @@
 
     <ImageView
         android:id="@+id/movie_detail_action_icon"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:padding="8dp"
+        android:layout_width="@dimen/icon_size_clickable"
+        android:layout_height="@dimen/icon_size_clickable"
+        android:padding="@dimen/icon_padding_clickable_start"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"/>
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="@dimen/icon_margin_clickable_start_end"
+        android:layout_marginLeft="@dimen/icon_margin_clickable_start_end"
+        android:layout_marginTop="@dimen/icon_margin_clickable"
+        android:layout_marginBottom="@dimen/icon_margin_clickable"
+        />
 
 </RelativeLayout>

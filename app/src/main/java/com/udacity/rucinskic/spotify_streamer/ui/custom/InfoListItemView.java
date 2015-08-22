@@ -15,173 +15,166 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.udacity.rucinskic.spotify_streamer.R;
+import com.udacity.rucinskic.spotify_streamer.ui.custom.adapter.support.Indexer;
 
+@SuppressWarnings("UnusedDeclaration")
 public class InfoListItemView extends FrameLayout {
 
-    private static final int SECONDARY_LAYOUT_STRING_DEFAULT = 0;
-    private static final int SECONDARY_LAYOUT_STRING_WITH_EXTRA = 1;
+	private static final int SECONDARY_LAYOUT_STRING_DEFAULT = 0;
+	private static final int SECONDARY_LAYOUT_STRING_WITH_EXTRA = 1;
 
-    public enum PrimaryViewType {
+	private static final int INVALID_RESOURCE = -1;
+	private static Indexer indexer;
+	public final ViewGroup root;
+	public final ImageView imgMainIcon;
+	public final ImageView imgSecondaryIcon;
+	public final ViewStub viewPrimaryStub;
+	public final TextView txtSecondary;
+	public final TextView txtSecondaryDivider;
+	public final TextView txtSecondaryExtra;
+	public View viewPrimary;
+	private boolean hasStringExtra;
 
-        LABEL(1), IMAGE(2), VIDEO(3), RATING(4), PROGRESS(5), SPACE(6), STUB(7);
+	public InfoListItemView(Context context) { this(context, null); }
 
-        private int ID;
+	public InfoListItemView(Context context, AttributeSet attrs) {
 
-        PrimaryViewType(int ID) { this.ID = ID;}
+		super(context, attrs);
 
-        public int getValue() { return ID; }
+		TypedArray a = context.getTheme()
+				.obtainStyledAttributes(attrs, R.styleable.InfoListItemView, 0, 0);
 
-    }
+		int mainIcon = a.getResourceId(R.styleable.InfoListItemView_mainIcon, INVALID_RESOURCE);
+		int actionIcon = a.getResourceId(R.styleable.InfoListItemView_actionIcon, INVALID_RESOURCE);
 
-    private static final int INVALID_RESOURCE = -1;
+		String secondaryText = a.getString(R.styleable.InfoListItemView_secondaryText);
+		String extraText = a.getString(R.styleable.InfoListItemView_secondaryExtraText);
 
-    private boolean hasStringExtra;
+		hasStringExtra = a.getBoolean(R.styleable.InfoListItemView_hasStringExtra, false);
 
-    private boolean hasMainIcon;
-    private boolean hasSecondaryIcon;
+		a.recycle();
 
-    private int primaryViewType;
+		root = (ViewGroup) LayoutInflater.from(context)
+				.inflate(R.layout.movie_detail_list_item_stub, this, true);
 
-    public ViewGroup root;
-    public ImageView imgMainIcon;
-    public ImageView imgSecondaryIcon;
-    public ViewStub viewPrimaryStub;
-    public View viewPrimary;
-    public TextView txtSecondary;
-    public TextView txtSecondaryDivider;
-    public TextView txtSecondaryExtra;
+		imgMainIcon = (ImageView) root.findViewById(R.id.movie_detail_main_icon);
+		imgSecondaryIcon = (ImageView) root.findViewById(R.id.movie_detail_action_icon);
+		viewPrimaryStub = (ViewStub) root.findViewById(R.id.movie_detail_primary_view_stub);
+		txtSecondary = (TextView) root.findViewById(R.id.movie_detail_secondary_text);
+		txtSecondaryDivider = (TextView) root.findViewById(R.id.movie_detail_secondary_divider);
+		txtSecondaryExtra = (TextView) root.findViewById(R.id.movie_detail_secondary_extra);
 
-    public InfoListItemView(Context context) { this(context, null); }
+		boolean hasMainIcon = (mainIcon != INVALID_RESOURCE);
+		if (hasMainIcon) imgMainIcon.setImageResource(mainIcon);
 
-    public InfoListItemView(Context context, AttributeSet attrs) {
+		boolean hasSecondaryIcon = (actionIcon != INVALID_RESOURCE);
+		if (hasSecondaryIcon) imgSecondaryIcon.setImageResource(actionIcon);
 
-        super(context, attrs);
+		if (secondaryText != null) txtSecondary.setText(secondaryText);
 
-        TypedArray a = context.getTheme()
-                .obtainStyledAttributes(attrs, R.styleable.InfoListItemView, 0, 0);
+		if (hasStringExtra) {
 
-        int mainIcon = a.getResourceId(R.styleable.InfoListItemView_mainIcon, INVALID_RESOURCE);
-        int actionIcon = a.getResourceId(R.styleable.InfoListItemView_actionIcon, INVALID_RESOURCE);
-        int primaryLayout =
-                a.getResourceId(R.styleable.InfoListItemView_primaryLayout, R.layout.stub);
-        String secondaryText = a.getString(R.styleable.InfoListItemView_secondaryText);
-        String extraText = a.getString(R.styleable.InfoListItemView_secondaryExtraText);
+			txtSecondaryDivider.setVisibility(VISIBLE);
+			txtSecondaryExtra.setVisibility(VISIBLE);
+			txtSecondaryExtra.setText(extraText);
 
-        primaryViewType = a.getInt(R.styleable.InfoListItemView_primaryViewType,
-                                   PrimaryViewType.SPACE.ID);
-        hasStringExtra = a.getBoolean(R.styleable.InfoListItemView_hasStringExtra, false);
+		} else {
 
-        a.recycle();
+			txtSecondaryDivider.setVisibility(GONE);
+			txtSecondaryExtra.setVisibility(GONE);
+			txtSecondaryExtra.setText("");
 
-        root = (ViewGroup) LayoutInflater.from(context)
-                .inflate(R.layout.movie_detail_list_item_stub, this, true);
+		}
 
-        imgMainIcon = (ImageView) root.findViewById(R.id.movie_detail_main_icon);
-        imgSecondaryIcon = (ImageView) root.findViewById(R.id.movie_detail_action_icon);
-        viewPrimaryStub = (ViewStub) root.findViewById(R.id.movie_detail_primary_view_stub);
-        txtSecondary = (TextView) root.findViewById(R.id.movie_detail_secondary_text);
-        txtSecondaryDivider = (TextView) root.findViewById(R.id.movie_detail_secondary_divider);
-        txtSecondaryExtra = (TextView) root.findViewById(R.id.movie_detail_secondary_extra);
+	}
 
-        hasMainIcon = (mainIcon != INVALID_RESOURCE);
-        if (hasMainIcon) imgMainIcon.setImageResource(mainIcon);
+	public void setMainIcon(@DrawableRes int icon) { this.imgMainIcon.setImageResource(icon); }
 
-        hasSecondaryIcon = (actionIcon != INVALID_RESOURCE);
-        if (hasSecondaryIcon) imgSecondaryIcon.setImageResource(actionIcon);
+	public void setActionIcon(@DrawableRes int icon) {
+		this.imgSecondaryIcon.setImageResource(icon);
+	}
 
-        if (secondaryText != null) txtSecondary.setText(secondaryText);
+	public void setSecondaryText(String text) { this.txtSecondary.setText(text); }
 
-        if (hasStringExtra) {
+	public void setSecondaryText(@StringRes int text) { this.txtSecondary.setText(text); }
 
-            txtSecondaryDivider.setVisibility(VISIBLE);
-            txtSecondaryExtra.setVisibility(VISIBLE);
-            txtSecondaryExtra.setText(extraText);
+	public void setSecondaryExtraText(String text) { this.txtSecondaryExtra.setText(text); }
 
-        } else {
+	public void setSecondaryExtraText(@StringRes int text) { this.txtSecondaryExtra.setText(text); }
 
-            txtSecondaryDivider.setVisibility(GONE);
-            txtSecondaryExtra.setVisibility(GONE);
-            txtSecondaryExtra.setText("");
+	public void setHasStringExtra(boolean hasStringExtra) {
 
-        }
+		this.hasStringExtra = hasStringExtra;
 
-    }
+		if (hasStringExtra) {
 
-    public void setMainIcon(@DrawableRes int icon) { this.imgMainIcon.setImageResource(icon);}
+			txtSecondaryDivider.setVisibility(VISIBLE);
+			txtSecondaryExtra.setVisibility(VISIBLE);
 
-    public void setActionIcon(@DrawableRes int icon) {
-        this.imgSecondaryIcon.setImageResource(icon);
-    }
+		} else {
 
-    public void setSecondaryText(String text) { this.txtSecondary.setText(text); }
+			txtSecondaryDivider.setVisibility(GONE);
+			txtSecondaryExtra.setVisibility(GONE);
+			txtSecondaryExtra.setText("");
 
-    public void setSecondaryText(@StringRes int text) { this.txtSecondary.setText(text); }
+		}
 
-    public void setSecondaryExtraText(String text) { this.txtSecondaryExtra.setText(text); }
+	}
 
-    public void setSecondaryExtraText(@StringRes int text) { this.txtSecondaryExtra.setText(text); }
+	public void setMainActionOnClickListener(OnClickListener listener) {
 
-    public void setHasStringExtra(boolean hasStringExtra) {
+		this.root.setOnClickListener(listener);
 
-        this.hasStringExtra = hasStringExtra;
+	}
 
-        if (hasStringExtra) {
+	public void setSecondaryActionOnClickListener(OnClickListener listener) {
 
-            txtSecondaryDivider.setVisibility(VISIBLE);
-            txtSecondaryExtra.setVisibility(VISIBLE);
+		this.imgSecondaryIcon.setOnClickListener(listener);
 
-        } else {
+	}
 
-            txtSecondaryDivider.setVisibility(GONE);
-            txtSecondaryExtra.setVisibility(GONE);
-            txtSecondaryExtra.setText("");
+	public void setMainActionOnLongClickListener(OnLongClickListener listener) {
 
-        }
+		this.root.setOnLongClickListener(listener);
 
-    }
+	}
 
-    public void setPrimaryView(@LayoutRes int layout) { // TODO check this
+	public void setSecondaryActionOnLongClickListener(OnLongClickListener listener) {
 
-        viewPrimaryStub.setLayoutResource(layout);
-        viewPrimary = viewPrimaryStub.inflate(); // No longer have access to the Stub after inflate
+		this.imgSecondaryIcon.setOnLongClickListener(listener);
 
-    }
+	}
 
-    public void setMainActionOnClickListener(OnClickListener listener) {
+	public void setPrimaryViewOnClickListener(OnClickListener listener) {
 
-        this.root.setOnClickListener(listener);
+		this.viewPrimary.setOnClickListener(listener);
 
-    }
-    public void setSecondaryActionOnClickListener(OnClickListener listener) {
+	}
 
-        this.imgSecondaryIcon.setOnClickListener(listener);
+	public void setPrimaryViewOnLongClickListener(OnLongClickListener listener) {
 
-    }
-    public void setMainActionOnLongClickListener(OnLongClickListener listener) {
+		this.viewPrimary.setOnLongClickListener(listener);
 
-        this.root.setOnLongClickListener(listener);
+	}
 
-    }
-    public void setSecondaryActionOnLongClickListener(OnLongClickListener listener) {
+	public ImageView getMainIconView() { return this.imgMainIcon; }
 
-        this.imgSecondaryIcon.setOnLongClickListener(listener);
+	public ImageView getActionIconView() { return this.imgSecondaryIcon; }
 
-    }
-    public void setPrimaryViewOnClickListener(OnClickListener listener) {
+	public TextView getSecondaryTextView() { return this.txtSecondary; }
 
-        this.viewPrimary.setOnClickListener(listener);
+	public TextView getExtraTextView() { return this.txtSecondaryExtra; }
 
-    }
-    public void setPrimaryViewOnLongClickListener(OnLongClickListener listener) {
+	public View getPrimaryView() { return this.viewPrimary; }
 
-        this.viewPrimary.setOnLongClickListener(listener);
+	public void setPrimaryView(@LayoutRes int layout) {
 
-    }
+		viewPrimaryStub.setLayoutResource(layout);
+		viewPrimary = viewPrimaryStub.inflate(); // No longer have access to the Stub after inflate
 
-    public ImageView getMainIconView() { return this.imgMainIcon; }
-    public ImageView getActionIconView() { return this.imgSecondaryIcon; }
+	}
 
-    public TextView getSecondaryTextView() { return this.txtSecondary; }
-    public TextView getExtraTextView() { return this.txtSecondaryExtra; }
+	//	public Indexer getIndexer() { return indexer; }
+	//	public static void setIndexer(Indexer indexer) { InfoListItemView.indexer = indexer; }
 
 }

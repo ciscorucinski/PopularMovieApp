@@ -1,5 +1,7 @@
 package com.udacity.rucinskic.spotify_streamer.enums;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 
 import com.udacity.rucinskic.spotify_streamer.App;
@@ -13,67 +15,166 @@ import java.util.List;
 
 public enum API implements Downloadable<Movie>, Groupable<API> {
 
-    POPULAR     ("Most Popular",    Uri.parse("http://api.themoviedb.org/3/movie/").buildUpon()),
-    TOP_RATED   ("Highest Rated",   Uri.parse("http://api.themoviedb.org/3/movie/").buildUpon()),
-    UPCOMING    ("Upcoming",        Uri.parse("http://api.themoviedb.org/3/movie/").buildUpon()),
-    SEARCH      ("Search",    Uri.parse("http://api.themoviedb.org/3/search/movie").buildUpon()),
+	POPULAR     ("Most Popular") {
+		@Override Uri.Builder appendUri(Uri.Builder builder, String... params) {
+			return builder.appendPath(name().toLowerCase());
+		}
+	},
+	TOP_RATED   ("Highest Rated") {
+		@Override Uri.Builder appendUri(Uri.Builder builder, String... params) {
+			return builder.appendPath(name().toLowerCase());
+		}
+	},
+	UPCOMING    ("Upcoming") {
+		@Override Uri.Builder appendUri(Uri.Builder builder, String... params) {
+			return builder.appendPath(name().toLowerCase());
+		}
+	},
+	SEARCH      ("Search") {
+		@Override Uri.Builder appendUri(Uri.Builder builder, String... params) {
+			return builder.appendQueryParameter("query", params[0]);
+		}
+	},
 
-    FAVORITE("Favorites", Uri.parse("http://api.themoviedb.org/3/movie/").buildUpon()),
-    WILL_WATCH("Want To Watch", Uri.parse("http://api.themoviedb.org/3/movie/").buildUpon()),
-    WATCHED("Watched", Uri.parse("http://api.themoviedb.org/3/movie/").buildUpon());
+	FAVORITE    ("Favorites") {
+		@Override Uri.Builder appendUri(Uri.Builder builder, String... params) {
+			return builder.appendPath(params[0]);
+		}
+	},
+	WILL_WATCH  ("Want To Watch") {
+		@Override Uri.Builder appendUri(Uri.Builder builder, String... params) {
+			return builder.appendPath(params[0]);
+		}
+	},
+	WATCHED     ("Watched") {
+		@Override Uri.Builder appendUri(Uri.Builder builder, String... params) {
+			return builder.appendPath(params[0]);
+		}
+	},
 
-    public static final EnumSet<API> WEB_GROUP = EnumSet.of(POPULAR, TOP_RATED, UPCOMING);
-    public static final EnumSet<API> SEARCH_GROUP = EnumSet.of(SEARCH);
-    public static final EnumSet<API> OFFLINE_GROUP = EnumSet.of(FAVORITE, WATCHED, WILL_WATCH);
+	VIDEOS      ("Videos") {
+		@Override Uri.Builder appendUri(Uri.Builder builder, String... params) {
+			return builder.appendPath(params[0]).appendPath(this.title.toLowerCase());
+		}
+	},
+	REVIEWS     ("Reviews") {
+		@Override Uri.Builder appendUri(Uri.Builder builder, String... params) {
+			return builder.appendPath(params[0]).appendPath(this.title.toLowerCase());
+		}
+	};
 
-    private final String title;
-    private final Uri.Builder uri;
-    private final List<Movie> movies;
+	abstract Uri.Builder appendUri(Uri.Builder builder, String... params);
 
-    API(final String title, Uri.Builder uri) {
+	private static final Uri BASE_URI =
+			Uri.parse("http://api.themoviedb.org/3/movie/").buildUpon()
+					.appendQueryParameter("api_key", App.getApiKey()).build();
 
-        this.title = title;
-        this.uri = uri;
-        this.movies = new ArrayList<>(App.getMovieCollectionLimit());
+	private static final Uri BASE_SEARCH_URI =
+			Uri.parse("http://api.themoviedb.org/3/search/movie").buildUpon()
+					.appendQueryParameter("api_key", App.getApiKey()).build();
 
-    }
+	public static final EnumSet<API> WEB_GROUP = EnumSet.of(POPULAR, TOP_RATED, UPCOMING);
+	public static final EnumSet<API> SEARCH_GROUP = EnumSet.of(SEARCH);
+	public static final EnumSet<API> OFFLINE_GROUP = EnumSet.of(FAVORITE, WATCHED, WILL_WATCH);
 
-    public Uri getUri(final String...parameters) {
+	private static final EnumSet<API> MOVIE_DATA = EnumSet.of(VIDEOS, REVIEWS);
 
-        if (this.isFrom(WEB_GROUP)) { uri.appendPath(name().toLowerCase()); }
-        else if (this.isFrom(SEARCH_GROUP)) { uri.appendQueryParameter("query", parameters[0]); }
-        else if (this.isFrom(OFFLINE_GROUP)) {} // TODO why don't you do something
+	final String title;
+	private final List<Movie> movies;
 
-        uri.appendQueryParameter("api_key", App.getApiKey());
+	API(final String title) {
 
-        return uri.build();
+		this.title = title;
+		this.movies = new ArrayList<>(App.getMovieCollectionLimit());
 
-    }
+	}
 
-    @Override
-    public void clearDownloadables() { this.movies.clear(); }
+	public Uri getUri(final String... parameters) {
 
-    @Override
-    public List<Movie> getDownloadables() { return this.movies; }
+		Uri uri = (this.isFrom(SEARCH_GROUP)) ? BASE_SEARCH_URI : BASE_URI;
+		return appendUri(uri.buildUpon(), parameters).build();
 
-    @Override
-    public boolean store(final Movie movie) { return this.movies.add(movie);}
+	}
 
-    @Override
-    public String toString() { return title; }
+	@Override
+	public boolean store(final Context context, final Movie movie) {
 
-    @Override
-    public boolean isFrom(final EnumSet set) { return this.getGroup().equals(set); }
+		if (this.isFrom(OFFLINE_GROUP)) {
 
-    @Override
-    public EnumSet<API> getGroup() {
+			SharedPreferences.Editor preference =
+					context.getSharedPreferences(this.name(), Context.MODE_PRIVATE).edit();
 
-        if (WEB_GROUP.contains(this)) return WEB_GROUP;
-        if (SEARCH_GROUP.contains(this)) return SEARCH_GROUP;
-        if (OFFLINE_GROUP.contains(this)) return OFFLINE_GROUP;
+			int id = movie.getID();
+			String name = movie.getName().toString();
 
-        return EnumSet.noneOf(API.class);
+			preference.putString(String.valueOf(id), name);
+			preference.commit();
 
-    }
+		}
+
+		return this.movies.add(movie);
+
+	}
+
+	@Override
+	public boolean remove(final Context context, final Movie movie) {
+
+		if (this.isFrom(OFFLINE_GROUP)) {
+
+			SharedPreferences.Editor preference =
+					context.getSharedPreferences(this.name(), Context.MODE_PRIVATE).edit();
+
+			int id = movie.getID();
+
+			preference.remove(String.valueOf(id));
+			preference.commit();
+
+		}
+
+		return this.movies.remove(movie);
+
+	}
+
+	@Override
+	public boolean has(Context context, Movie movie) {
+
+		if (this.isFrom(OFFLINE_GROUP)) {
+
+			SharedPreferences preference =
+					context.getSharedPreferences(this.name(), Context.MODE_PRIVATE);
+
+			int id = movie.getID();
+
+			return preference.contains(String.valueOf(id));
+
+		}
+
+		return this.movies.contains(movie);
+
+	}
+
+	@Override
+	public void clearDownloadables() { this.movies.clear(); }
+
+	@Override
+	public List<Movie> getDownloadables() { return this.movies; }
+
+	@Override
+	public EnumSet<API> getGroup() {
+
+		if (WEB_GROUP.contains(this)) return WEB_GROUP;
+		if (SEARCH_GROUP.contains(this)) return SEARCH_GROUP;
+		if (OFFLINE_GROUP.contains(this)) return OFFLINE_GROUP;
+		if (MOVIE_DATA.contains(this)) return MOVIE_DATA;
+
+		return EnumSet.noneOf(API.class);
+
+	}
+
+	@Override
+	public boolean isFrom(final EnumSet set) { return this.getGroup().equals(set); }
+
+	@Override
+	public String toString() { return title; }
 
 }

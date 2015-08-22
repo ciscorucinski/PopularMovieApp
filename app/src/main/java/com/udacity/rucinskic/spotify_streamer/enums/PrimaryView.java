@@ -1,64 +1,79 @@
 package com.udacity.rucinskic.spotify_streamer.enums;
 
+import android.support.annotation.DrawableRes;
 import android.view.View;
 
+import com.udacity.rucinskic.spotify_streamer.R;
 import com.udacity.rucinskic.spotify_streamer.ui.custom.adapter.holder.BaseViewHolder;
-import com.udacity.rucinskic.spotify_streamer.ui.custom.adapter.holder.MultiLineViewHolder;
+import com.udacity.rucinskic.spotify_streamer.ui.custom.adapter.holder.OverviewViewHolder;
 import com.udacity.rucinskic.spotify_streamer.ui.custom.adapter.holder.RatingViewHolder;
-import com.udacity.rucinskic.spotify_streamer.ui.custom.adapter.holder.SingleLineViewHolder;
+import com.udacity.rucinskic.spotify_streamer.ui.custom.adapter.holder.ReviewViewHolder;
 import com.udacity.rucinskic.spotify_streamer.ui.custom.adapter.holder.VideoViewHolder;
+import com.udacity.rucinskic.spotify_streamer.ui.custom.adapter.holder.YearViewHolder;
+import com.udacity.rucinskic.spotify_streamer.ui.custom.adapter.support.Indexer;
 
 public enum PrimaryView {
 
-    TEXT_SHORT {
-        @Override
-        public BaseViewHolder getViewHolder(View v, boolean isHeader) {
+	RELEASE("Release", -1) {
+		@Override
+		public BaseViewHolder getViewHolder(View v, Indexer.Indexed index) {
 
-            return new SingleLineViewHolder(v, isHeader);
-        }
+			return new YearViewHolder(v, index);
+		}
+	},
+	OVERVIEW("Overview", R.drawable.ic_more_black_24dp) {
+		@Override
+		public BaseViewHolder getViewHolder(View v, Indexer.Indexed index) {
 
-    },
-    TEXT_LONG {
-        @Override
-        public BaseViewHolder getViewHolder(View v, boolean isHeader) {
+			return new OverviewViewHolder(v, index);
+		}
+	},
+	RATING("Rating", -1) {
+		@Override
+		public BaseViewHolder getViewHolder(View v, Indexer.Indexed index) {
 
-            return new MultiLineViewHolder(v, isHeader);
-        }
+			return new RatingViewHolder(v, index);
+		}
+	},
+	VIDEO("Video", R.drawable.ic_youtube_black_24dp) {
+		@Override
+		public BaseViewHolder getViewHolder(View v, Indexer.Indexed index) {
 
-    },
-    RATING {
-        @Override
-        public BaseViewHolder getViewHolder(View v, boolean isHeader) {
+			return new VideoViewHolder(v, index);
+		}
+	},
+	REVIEW("Review", R.drawable.ic_more_black_24dp) {
+		@Override
+		public BaseViewHolder getViewHolder(View v, Indexer.Indexed index) {
 
-            return new RatingViewHolder(v, isHeader);
-        }
+			return new ReviewViewHolder(v, index);
+		}
+	};
 
-    },
-    VIDEO {
-        @Override
-        public BaseViewHolder getViewHolder(View v, boolean isHeader) {
+	private static final int NO_ICON = -1;
+			// Cannot assign "NO_ICON" above. Enums don't allow it, so I have to assign the number directly
 
-            return new VideoViewHolder(v, isHeader);
-        }
+	private final String description;
+	private final @DrawableRes int icon;
+	private final boolean hasIcon;
 
-    },
-    REVIEW {
-        @Override
-        public BaseViewHolder getViewHolder(View v, boolean isHeader) {
+	PrimaryView(String description, @DrawableRes int icon) {
 
-            return new SingleLineViewHolder(v, isHeader);
-        }
+		this.description = description;
+		this.icon = icon;
+		this.hasIcon = icon != NO_ICON;
 
-    },
-    MISSING {
-        @Override
-        public BaseViewHolder getViewHolder(View v, boolean isHeader) {
+	}
 
-            return new SingleLineViewHolder(v, isHeader);
-        }
+	public abstract BaseViewHolder getViewHolder(View view, Indexer.Indexed index);
 
-    };
+	public String getDescription() { return this.description; }
 
-    public abstract BaseViewHolder getViewHolder(View view, boolean isHeader);
+	public
+	@DrawableRes
+	int getIconResource() { return this.icon; }
+
+	public boolean hasIcon() { return this.hasIcon; }
+
 
 }

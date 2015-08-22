@@ -4,48 +4,54 @@ import com.udacity.rucinskic.spotify_streamer.interfaces.Searchable;
 
 public enum Search implements Searchable {
 
-    CHARACTER { @Override public boolean canSearch(String word) { return isNotEmpty(word); }    },
-    WORD      { @Override public boolean canSearch(String word) { return isNewWord(word); }     },
-    BUFFER {
-        @Override
-        public boolean canSearch(String word) { return reachedBuffer(word); }
-    },
-    PHRASE {
-        @Override
-        public boolean canSearch(String word) { return false; }
-    };
+	CHARACTER {
+		@Override
+		public boolean canSearch(String word) { return isNotEmpty(word); }
+	},
+	WORD {
+		@Override
+		public boolean canSearch(String word) { return isNewWord(word); }
+	},
+	BUFFER {
+		@Override
+		public boolean canSearch(String word) { return reachedBuffer(word); }
+	},
+	PHRASE {
+		@Override
+		public boolean canSearch(String word) { return false; }
+	};
 
-    // TODO add enums dealing with timing.
+	private static final int BUFFER_SIZE = 3;
+	private static String searchTerm;
 
-    private static String searchTerm;
-    private static final int BUFFER_SIZE = 3;
+	private static boolean isNewWord(final String word) {
 
-    private static boolean isConditionMet(final String word, final boolean newSearchWordCondition) {
+		return isConditionMet(word,
+		                      word.endsWith(" ") && (isNotEmpty(word)));
 
-        searchTerm = (newSearchWordCondition) ? word : "";
-        return newSearchWordCondition;
+	}
 
-    }
+	private static boolean isConditionMet(final String word, final boolean newSearchWordCondition) {
 
-    private static boolean isNewWord(final String word) {
+		searchTerm = (newSearchWordCondition) ? word : "";
+		return newSearchWordCondition;
 
-        return isConditionMet(word,
-                word.endsWith(" ") && (isNotEmpty(word)));
+	}
 
-    }
-    private static boolean reachedBuffer(final String word) {
+	private static boolean isNotEmpty(final String word) {
 
-        return isConditionMet(word,
-                word.length() > BUFFER_SIZE);
+		return isConditionMet(word,
+		                      !word.isEmpty());
 
-    }
-    private static boolean isNotEmpty(final String word) {
+	}
 
-        return isConditionMet(word,
-                !word.isEmpty());
+	private static boolean reachedBuffer(final String word) {
 
-    }
+		return isConditionMet(word,
+		                      word.length() > BUFFER_SIZE);
 
-    public static String getSearchableWord() { return searchTerm; }
+	}
+
+	public static String getSearchableWord() { return searchTerm; }
 
 }

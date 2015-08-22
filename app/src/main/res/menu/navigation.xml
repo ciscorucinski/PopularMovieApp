@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/movie_heading"
-        android:title="Movies"
+        android:title="@string/navigation_header_movies"
         android:enabled="false">
 
         <menu
@@ -13,13 +13,13 @@
             <item
                 android:id="@+id/navigationOnline"
                 android:icon="@drawable/ic_movie_creation_white_24dp"
-                android:title="Find Online"
+                android:title="@string/navigation_movies_online"
                 android:checkable="true"/>
 
             <item
                 android:id="@+id/navigationMyCollection"
                 android:icon="@drawable/abc_btn_rating_star_on_mtrl_alpha"
-                android:title="My Collections"
+                android:title="@string/navigation_movies_offline"
                 android:checkable="true"/>
 
         </menu>
@@ -33,7 +33,7 @@
         <item
             android:id="@+id/navigationSetting"
             android:icon="@drawable/ic_settings_white_24dp"
-            android:title="Settings"/>
+            android:title="@string/navigation_setting"/>
 
     </group>
 

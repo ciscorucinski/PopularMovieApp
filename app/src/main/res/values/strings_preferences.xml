@@ -11,8 +11,8 @@
     </string>
 
     <string-array name="search_method">
-        <item>After a New Character</item>
-        <item>After a Word</item>
+        <item>After A New Character</item>
+        <item>After A Word</item>
         <item>After 3 Characters</item>
         <item>None</item>
     </string-array>
@@ -29,7 +29,7 @@
     <string name="pref_local_is_cached">Cache</string>
     <string name="pref_local_is_cached_key">key_is_cached</string>
     <string name="pref_local_is_cached_description">
-        Saved online movies for faster startups?
+        Save online movie results for faster startups?
     </string>
 
 </resources>

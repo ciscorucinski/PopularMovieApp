@@ -2,6 +2,7 @@ package com.udacity.rucinskic.spotify_streamer.ui;
 
 import android.os.Bundle;
 
+import com.udacity.rucinskic.spotify_streamer.App;
 import com.udacity.rucinskic.spotify_streamer.R;
 import com.udacity.rucinskic.spotify_streamer.enums.API;
 
@@ -9,17 +10,26 @@ import java.util.EnumSet;
 
 public class MainActivity extends BaseSearchTabbedActivity {
 
-    @Override
-    protected void onCreate(final Bundle savedInstanceState) {
+	private static final String LOAD_PREFS = "SHOULD_LOAD_SHARED_PREFS";
+	boolean needToLoadSharedPreferences = true;
 
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+	@Override
+	EnumSet<API> getDefaultTabs() { return API.WEB_GROUP; }
 
-        initializeToolbar();
+	@Override
+	protected void onCreate(final Bundle savedInstanceState) {
 
-    }
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
 
-    @Override
-    EnumSet<API> getDefaultTabs() { return API.WEB_GROUP; }
+		initializeToolbar();
+
+		if (savedInstanceState == null) {
+
+			App.loadSharedPreferences(getApplication());
+
+		}
+
+	}
 
 }
